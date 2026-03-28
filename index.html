@@ -1,0 +1,867 @@
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRINTING CALCULATOR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+  <!-- Link to Flowbite JS for drawer functionality -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Drawer init and show button -->
+  <div class="p-4 flex items-center gap-3">
+    <button
+      class="sidebar-toggle-blue focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 flex items-center justify-center transition-colors"
+      type="button" data-drawer-target="drawer-navigation" data-drawer-show="drawer-navigation"
+      aria-controls="drawer-navigation" data-drawer-backdrop="true" title="Show Navigation">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="9" y1="3" x2="9" y2="21"></line>
+      </svg>
+    </button>
+    <div class="w-px h-6 bg-gray-400 dark:bg-gray-600"></div>
+    <button
+      class="text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-500 dark:hover:bg-gray-600 focus:outline-none dark:focus:ring-gray-800"
+      type="button" onclick="loadPage('home')">
+      <i class="fas fa-home mr-2"></i> Home
+    </button>
+    <button id="theme-toggle" type="button"
+      class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
+      <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+      </svg>
+      <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 10.607a1 1 0 010-1.414l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM3 11a1 1 0 100 2H2a1 1 0 100-2h1z"
+          fill-rule="evenodd" clip-rule="evenodd"></path>
+      </svg>
+    </button>
+  </div>
+  <!-- Drawer component -->
+  <div id="drawer-navigation"
+    class="fixed top-0 left-0 z-40 w-64 h-screen p-4 overflow-y-auto transition-transform -translate-x-full bg-white dark:bg-gray-800"
+    tabindex="-1" aria-labelledby="drawer-navigation-label">
+    <h5 id="drawer-navigation-label" class="text-base font-semibold text-gray-500 uppercase dark:text-gray-400">Menu
+    </h5>
+    <button type="button" data-drawer-hide="drawer-navigation" aria-controls="drawer-navigation"
+      class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 end-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
+      <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd"
+          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+          clip-rule="evenodd"></path>
+      </svg>
+      <span class="sr-only">Close menu</span>
+    </button>
+    <div class="py-4 overflow-y-auto">
+      <ul class="space-y-2 font-medium">
+        <li>
+          <a href="#" onclick="loadPage('home');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-home w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">Home</span>
+          </a>
+        </li>
+        <li id="nav-item-largeFormat">
+          <a href="#" onclick="loadPage('largeFormat');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-expand-arrows-alt w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">Large Format</span>
+          </a>
+        </li>
+        <li id="nav-item-signboard">
+          <a href="#" onclick="loadPage('signboard');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-sign w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">Signboard</span>
+          </a>
+        </li>
+        <li id="nav-item-stand">
+          <a href="#" onclick="loadPage('stand');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <svg
+              class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+              aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                d="M13.09 3.294c1.924.95 3.422 1.69 5.472.692a1 1 0 0 1 1.438.9v9.54a1 1 0 0 1-.562.9c-2.981 1.45-5.382.24-7.25-.701a38.739 38.739 0 0 0-.622-.31c-1.033-.497-1.887-.812-2.756-.77-.76.036-1.672.357-2.81 1.396V21a1 1 0 1 1-2 0V4.971a1 1 0 0 1 .297-.71c1.522-1.506 2.967-2.185 4.417-2.255 1.407-.068 2.653.453 3.72.967.225.108.443.216.655.32Z" />
+            </svg>
+            <span class="ms-3">Stand</span>
+          </a>
+        </li>
+        <li id="nav-item-sublimation">
+          <a href="#" onclick="loadPage('sublimation');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-tshirt w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">Sublimation</span>
+          </a>
+        </li>
+        <li id="nav-item-invitationCard">
+          <a href="#" onclick="loadPage('invitationCard');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-envelope-open-text w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">Invitation Card</span>
+          </a>
+        </li>
+        <li id="nav-item-businessCard">
+          <a href="#" onclick="loadPage('businessCard');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-address-card w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">Business Card</span>
+          </a>
+        </li>
+        <li id="nav-item-idCard">
+          <a href="#" onclick="loadPage('idCard');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-id-card w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">ID Card</span>
+          </a>
+        </li>
+        <li id="nav-item-lanyard">
+          <a href="#" onclick="loadPage('lanyard');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-id-badge w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">Lanyard</span>
+          </a>
+        </li>
+        <li id="nav-item-dtf">
+          <a href="#" onclick="loadPage('dtf');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-print w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">DTF &amp; UVDTF</span>
+          </a>
+        </li>
+        <li id="nav-item-stamp">
+          <a href="#" onclick="loadPage('stamp');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-stamp w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">Stamp</span>
+          </a>
+        </li>
+        <li id="nav-item-stickerLayout">
+          <a href="#" onclick="loadPage('stickerLayout');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-sticky-note w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">Sticker Layout</span>
+          </a>
+        </li>
+        <li id="nav-item-acrylicCalculator">
+          <a href="#" onclick="loadPage('acrylicCalculator');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-layer-group w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">Acrylic Calculator</span>
+          </a>
+        </li>
+        <li id="nav-item-giftItem">
+          <a href="#" onclick="loadPage('giftItem');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-gift w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">Gift Item</span>
+          </a>
+        </li>
+        <li id="nav-item-asset">
+          <a href="#" onclick="loadPage('asset');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-images w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">Asset Library</span>
+          </a>
+        </li>
+        <li id="nav-item-loadQuote">
+          <a href="#" onclick="loadPage('loadQuote');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-save w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">Load Quote</span>
+          </a>
+        </li>
+        <li>
+          <hr class="border-gray-200 dark:border-gray-700">
+        </li>
+        <li>
+          <a href="#" onclick="loadPage('settings');"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <i
+              class="fas fa-cog w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+            <span class="ms-3">Settings</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="content" id="contentArea">
+    <!-- Content will be loaded here by JavaScript -->
+  </div>
+  <div id="currencyModal" class="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl m-4 flex flex-col">
+      <div class="flex justify-between items-center p-4 border-b">
+        <h3 class="text-xl font-semibold text-gray-900">Select a currency</h3>
+        <button type="button"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+          onclick="closeCurrencyModal()">
+          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <div class="p-4 border-b">
+        <input type="text" id="currencySearch" onkeyup="openCurrencyModal()"
+          placeholder="Search currency (e.g., USD, Dollar)" class="w-full p-2 border border-gray-300 rounded-md">
+      </div>
+      <div id="currencyList"
+        class="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-1 max-h-[60vh] overflow-y-auto">
+      </div>
+      <div class="p-4 border-t flex justify-end bg-gray-50 rounded-b-lg">
+        <button id="saveCurrencyBtn" onclick="selectCurrency()"
+          class="text-white bg-blue-700 hover:bg-blue-800 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium rounded-lg text-sm px-5 py-2.5"
+          style="width: auto; margin-top:0;" disabled>Save Changes</button>
+      </div>
+    </div>
+  </div>
+  <div id="quotePreviewModal" class="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 hidden"
+    onclick="closeQuotePreviewModal()">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-xl m-4 flex flex-col"
+      onclick="event.stopPropagation()">
+      <div class="flex justify-between items-center px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+        <h3 id="quotePreviewTitle" class="text-xl font-semibold text-gray-900 dark:text-white">Quote Preview</h3>
+        <button type="button"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+          onclick="closeQuotePreviewModal()">
+          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <div id="quotePreviewBody" class="p-4 max-h-[60vh] overflow-y-auto">
+      </div>
+      <div
+        class="px-4 py-3 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700 rounded-b-lg">
+        <button type="button" class="btn btn-secondary" onclick="closeQuotePreviewModal()">Close</button>
+        <button type="button" class="btn btn-primary" onclick="copyQuoteToClipboard()">
+          <i class="fas fa-copy mr-2"></i>Copy Quote
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Save Confirmation Modal -->
+  <div id="saveConfirmationModal"
+    class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+    style="background-color: rgba(0,0,0,0.5);">
+    <div
+      class="bg-[#2a2e39] text-white rounded-xl shadow-2xl w-full max-w-sm p-8 flex flex-col items-center justify-center border border-[#3f4454]">
+      <i class="fas fa-save text-5xl text-[#22c55e] mb-4"></i>
+      <h2 class="text-xl font-bold mb-2">Save Changes?</h2>
+      <p class="text-gray-400 text-center mb-6 text-sm">Are you sure you want to save current changes?</p>
+      <div class="flex gap-4 w-full justify-center">
+        <button onclick="closeSaveConfirmationModal()"
+          class="px-6 py-2 bg-[#4b5563] hover:bg-gray-500 rounded-lg font-semibold transition-colors text-white">Cancel</button>
+        <button onclick="confirmSaveAction()"
+          class="px-6 py-2 bg-[#22c55e] hover:bg-green-400 rounded-lg text-white font-semibold transition-colors">Save</button>
+      </div>
+    </div>
+  </div>
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteConfirmationModal"
+    class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+    style="background-color: rgba(0,0,0,0.5);">
+    <div
+      class="bg-[#2a2e39] text-white rounded-xl shadow-2xl w-[90%] max-w-sm p-6 sm:p-8 flex flex-col items-center justify-center border border-[#3f4454]">
+      <i class="fas fa-trash text-4xl sm:text-5xl text-red-500 mb-4"></i>
+      <h2 class="text-lg sm:text-xl font-bold mb-2 text-center" id="deleteConfirmationTitle">Delete Item?</h2>
+      <p class="text-gray-400 text-center mb-6 text-sm" id="deleteConfirmationDesc">Are you sure you want to delete this
+        item? This action cannot be undone.</p>
+      <div class="flex gap-3 sm:gap-4 w-full justify-center">
+        <button onclick="closeDeleteConfirmationModal()"
+          class="px-5 py-2 sm:px-6 sm:py-2 bg-[#4b5563] hover:bg-gray-500 rounded-lg font-semibold transition-colors text-white text-sm sm:text-base">Cancel</button>
+        <button onclick="confirmDeleteAction()"
+          class="px-5 py-2 sm:px-6 sm:py-2 bg-red-500 hover:bg-red-400 rounded-lg text-white font-semibold transition-colors text-sm sm:text-base">Delete</button>
+      </div>
+    </div>
+  </div>
+  <!-- Create New Add-on Group Modal -->
+  <div id="addAddonGroupModal"
+    class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+    style="background-color: rgba(0,0,0,0.6);">
+    <div class="bg-[#1e2230] text-white rounded-2xl shadow-2xl w-[90%] max-w-sm p-8 border border-[#3f4454]">
+      <h2 class="text-base font-semibold mb-6">Create New Add-on Group</h2>
+      <label class="text-sm font-semibold mb-2 block">Group Name</label>
+      <input id="newAddonGroupNameInput" type="text" placeholder="e.g., Lamination, Round Corner"
+        class="w-full border border-[#4b5563] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+        style="background-color: #374151; color: #ffffff;" onkeydown="if(event.key==='Enter') confirmAddAddonGroup()">
+      <div class="border-t border-[#3f4454] my-6"></div>
+      <div class="flex justify-center gap-3">
+        <button onclick="closeAddAddonGroupModal()"
+          class="px-6 py-2 bg-[#4b5563] hover:bg-gray-500 rounded-lg font-semibold transition-colors text-white text-sm">Cancel</button>
+        <button onclick="confirmAddAddonGroup()"
+          class="px-6 py-2 bg-blue-500 hover:bg-blue-400 rounded-lg text-white font-semibold transition-colors text-sm">Create
+          Group</button>
+      </div>
+    </div>
+  </div>
+  <!-- Add Quantity Modal -->
+  <div id="addQtyModal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+    style="background-color: rgba(0,0,0,0.6);">
+    <div class="bg-[#1e2230] text-white rounded-2xl shadow-2xl w-[90%] max-w-sm p-8 border border-[#3f4454]">
+      <h2 class="text-base font-semibold mb-6">Add Quantity Column</h2>
+      <label class="text-sm font-semibold mb-2 block">Quantity Name</label>
+      <input id="newQtyNameInput" type="text" placeholder="e.g., 15 Boxes, 1000 Pcs"
+        class="w-full border border-[#4b5563] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+        style="background-color: #374151; color: #ffffff;"
+        onkeydown="if(event.key==='Enter') confirmAddBusinessCardQty()">
+      <div class="border-t border-[#3f4454] my-6"></div>
+      <div class="flex justify-center gap-3">
+        <button onclick="closeAddQtyModal()"
+          class="px-6 py-2 bg-[#4b5563] hover:bg-gray-500 rounded-lg font-semibold transition-colors text-white text-sm">Cancel</button>
+        <button onclick="confirmAddBusinessCardQty()"
+          class="px-6 py-2 bg-blue-500 hover:bg-blue-400 rounded-lg text-white font-semibold transition-colors text-sm">Add
+          Qty</button>
+      </div>
+    </div>
+  </div>
+  <!-- Create New Business Card Add-on Group Modal -->
+  <div id="addBusinessCardAddonGroupModal"
+    class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+    style="background-color: rgba(0,0,0,0.6);">
+    <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl shadow-2xl w-[90%] max-w-sm p-8 border border-gray-200 dark:border-gray-700">
+      <h2 class="text-base font-semibold mb-6">Create New Add-on Group</h2>
+      <label class="text-sm font-semibold mb-2 block">Group Name</label>
+      <input id="newBCAddonGroupNameInput" type="text" placeholder="e.g., Lamination, Round Corner"
+        class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+        onkeydown="if(event.key==='Enter') confirmAddBusinessCardAddonGroup()">
+      <div class="border-t border-gray-200 dark:border-gray-700 my-6"></div>
+      <div class="flex justify-center gap-3">
+        <button onclick="closeAddBusinessCardAddonGroupModal()"
+          class="px-6 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg font-semibold transition-colors text-gray-700 dark:text-white text-sm">Cancel</button>
+        <button onclick="confirmAddBusinessCardAddonGroup()"
+          class="px-6 py-2 bg-blue-500 hover:bg-blue-400 rounded-lg text-white font-semibold transition-colors text-sm">Create
+          Group</button>
+      </div>
+    </div>
+  </div>
+  <!-- Create New Lanyard Add-on Group Modal -->
+  <div id="addLanyardAddonGroupModal"
+    class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+    style="background-color: rgba(0,0,0,0.6);">
+    <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl shadow-2xl w-[90%] max-w-sm p-8 border border-gray-200 dark:border-gray-700">
+      <h2 class="text-base font-semibold mb-6">Create New Add-on Group</h2>
+      <label class="text-sm font-semibold mb-2 block">Group Name</label>
+      <input id="newLanyardAddonGroupNameInput" type="text" placeholder="e.g., Badge Holder, Hook Type"
+        class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+        onkeydown="if(event.key==='Enter') confirmAddLanyardAddonGroup()">
+      <div class="border-t border-gray-200 dark:border-gray-700 my-6"></div>
+      <div class="flex justify-center gap-3">
+        <button onclick="closeAddLanyardAddonGroupModal()"
+          class="px-6 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg font-semibold transition-colors text-gray-700 dark:text-white text-sm">Cancel</button>
+        <button onclick="confirmAddLanyardAddonGroup()"
+          class="px-6 py-2 bg-blue-500 hover:bg-blue-400 rounded-lg text-white font-semibold transition-colors text-sm">Create
+          Group</button>
+      </div>
+    </div>
+  </div>
+  <!-- Create New ID Card Add-on Group Modal -->
+  <div id="addIDCardAddonGroupModal"
+    class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+    style="background-color: rgba(0,0,0,0.6);">
+    <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl shadow-2xl w-[90%] max-w-sm p-8 border border-gray-200 dark:border-gray-700">
+      <h2 class="text-base font-semibold mb-6">Create New Add-on Group</h2>
+      <label class="text-sm font-semibold mb-2 block">Group Name</label>
+      <input id="newIDCardAddonGroupNameInput" type="text" placeholder="e.g., Lanyard, Pen"
+        class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+        onkeydown="if(event.key==='Enter') confirmAddIDCardAddonGroup()">
+      <div class="border-t border-gray-200 dark:border-gray-700 my-6"></div>
+      <div class="flex justify-center gap-3">
+        <button onclick="closeAddIDCardAddonGroupModal()"
+          class="px-6 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg font-semibold transition-colors text-gray-700 dark:text-white text-sm">Cancel</button>
+        <button onclick="confirmAddIDCardAddonGroup()"
+          class="px-6 py-2 bg-blue-500 hover:bg-blue-400 rounded-lg text-white font-semibold transition-colors text-sm">Create
+          Group</button>
+      </div>
+    </div>
+  </div>
+  <!-- Create New Sublimation Add-on Group Modal -->
+  <div id="addSublimationAddonGroupModal"
+    class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+    style="background-color: rgba(0,0,0,0.6);">
+    <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl shadow-2xl w-[90%] max-w-sm p-8 border border-gray-200 dark:border-gray-700">
+      <h2 class="text-base font-semibold mb-6">Create New Add-on Group</h2>
+      <label class="text-sm font-semibold mb-2 block">Group Name</label>
+      <input id="newSublimationAddonGroupNameInput" type="text" placeholder="e.g., Lamination, Size"
+        class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+        onkeydown="if(event.key==='Enter') confirmAddSublimationAddonGroup()">
+      <div class="border-t border-gray-200 dark:border-gray-700 my-6"></div>
+      <div class="flex justify-center gap-3">
+        <button onclick="closeAddSublimationAddonGroupModal()"
+          class="px-6 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg font-semibold transition-colors text-gray-700 dark:text-white text-sm">Cancel</button>
+        <button onclick="confirmAddSublimationAddonGroup()"
+          class="px-6 py-2 bg-blue-500 hover:bg-blue-400 rounded-lg text-white font-semibold transition-colors text-sm">Create
+          Group</button>
+      </div>
+    </div>
+  </div>
+  <!-- Manage Sizes Modal -->
+  <div id="manageSizesModal"
+    class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+    style="background-color: rgba(0,0,0,0.6);">
+    <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl shadow-2xl w-[90%] max-w-md p-8 border border-gray-200 dark:border-gray-700">
+      <h2 class="text-base font-semibold mb-1">Manage Sizes</h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Add, remove, or reorder sizes.</p>
+      <div id="manageSizesList"
+        class="flex flex-col border border-gray-200 dark:border-gray-700 rounded-xl divide-y divide-gray-200 dark:divide-gray-700 mb-4 overflow-hidden"></div>
+      <button onclick="addSizeRowToManageSizes()"
+        class="w-full border-2 border-dashed border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-400 dark:hover:border-gray-500 rounded-xl py-3 text-sm font-semibold transition-colors mb-8">+
+        Add Size</button>
+      <div class="flex justify-between items-center gap-3 border-t border-gray-200 dark:border-gray-700 pt-6">
+        <div class="flex gap-3">
+          <button onclick="closeManageSizesModal()"
+            class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg font-semibold transition-colors text-gray-700 dark:text-white text-sm">Cancel</button>
+          <button onclick="redoManageSizes()"
+            class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg font-semibold transition-colors text-gray-700 dark:text-white text-sm">Redo</button>
+        </div>
+        <button onclick="saveManageSizes()"
+          class="px-5 py-2.5 bg-blue-500 hover:bg-blue-400 rounded-lg text-white font-semibold transition-colors text-sm">Save
+          Changes</button>
+      </div>
+    </div>
+  </div>
+  <div id="manageLanyardSizesModal"
+    class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+    style="background-color: rgba(0,0,0,0.6);">
+    <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl shadow-2xl w-[90%] max-w-md p-8 border border-gray-200 dark:border-gray-700">
+      <h2 class="text-base font-semibold mb-1">Manage Sizes</h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Add, remove, or reorder lanyard sizes.</p>
+      <div id="manageLanyardSizesList"
+        class="flex flex-col border border-gray-200 dark:border-gray-700 rounded-xl divide-y divide-gray-200 dark:divide-gray-700 mb-4 overflow-hidden"></div>
+      <button onclick="addRowToManageLanyardSizes()"
+        class="w-full border-2 border-dashed border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-400 dark:hover:border-gray-500 rounded-xl py-3 text-sm font-semibold transition-colors mb-8">+
+        Add Size</button>
+      <div class="flex justify-between items-center gap-3 border-t border-gray-200 dark:border-gray-700 pt-6">
+        <div class="flex gap-3">
+          <button onclick="closeManageLanyardSizesModal()"
+            class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg font-semibold transition-colors text-gray-700 dark:text-white text-sm">Cancel</button>
+          <button onclick="redoManageLanyardSizes()"
+            class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg font-semibold transition-colors text-gray-700 dark:text-white text-sm">Redo</button>
+        </div>
+        <button onclick="saveManageLanyardSizes()"
+          class="px-5 py-2.5 bg-blue-500 hover:bg-blue-400 rounded-lg text-white font-semibold transition-colors text-sm">Save
+          Changes</button>
+      </div>
+    </div>
+  </div>
+  <!-- Manage Stamp Categories Modal -->
+  <div id="manageStampCategoriesModal"
+    class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+    style="background-color: rgba(0,0,0,0.6);">
+    <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl shadow-2xl w-[90%] max-w-2xl p-8 border border-gray-200 dark:border-gray-700">
+      <h2 class="text-base font-semibold mb-1">Manage Categories</h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Add, remove, or reorder stamp categories.</p>
+      <div id="manageStampCategoriesList"
+        class="flex flex-col border border-gray-200 dark:border-gray-700 rounded-xl divide-y divide-gray-200 dark:divide-gray-700 mb-4 overflow-hidden"></div>
+      <button onclick="addRowToManageStampCategories()"
+        class="w-full border-2 border-dashed border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-400 dark:hover:border-gray-500 rounded-xl py-3 text-sm font-semibold transition-colors mb-8">+
+        Add Category</button>
+      <div class="flex justify-between items-center gap-3 border-t border-gray-200 dark:border-gray-700 pt-6">
+        <div class="flex gap-3">
+          <button onclick="closeManageStampCategoriesModal()"
+            class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg font-semibold transition-colors text-gray-700 dark:text-white text-sm">Cancel</button>
+          <button onclick="redoManageStampCategories()"
+            class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg font-semibold transition-colors text-gray-700 dark:text-white text-sm">Redo</button>
+        </div>
+        <button onclick="saveManageStampCategories()"
+          class="px-5 py-2.5 bg-blue-500 hover:bg-blue-400 rounded-lg text-white font-semibold transition-colors text-sm">Save
+          Changes</button>
+      </div>
+    </div>
+  </div>
+  <!-- Color Picker Modal -->
+  <div id="colorPickerModal"
+    class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+    style="background-color: rgba(0,0,0,0.6);">
+    <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl shadow-2xl w-[90%] max-w-xs p-6 border border-gray-200 dark:border-gray-700">
+      <h3 class="text-base font-semibold mb-4">Select Color</h3>
+      <div class="flex flex-col gap-4">
+        <div class="flex justify-center">
+          <input type="color" id="colorPickerInput" class="w-32 h-32 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600" value="#3b82f6">
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-gray-500 dark:text-gray-400">Hex:</span>
+          <input type="text" id="colorPickerHex" class="flex-1 font-semibold rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600" placeholder="#3b82f6" value="#3b82f6">
+        </div>
+      </div>
+      <div class="flex justify-end gap-3 mt-6">
+        <button onclick="closeColorPickerModal()"
+          class="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg font-semibold transition-colors text-gray-700 dark:text-white text-sm">Cancel</button>
+        <button onclick="confirmColorPicker()"
+          class="px-4 py-2 bg-blue-500 hover:bg-blue-400 rounded-lg text-white font-semibold transition-colors text-sm">Done</button>
+      </div>
+    </div>
+  </div>
+  <div id="bottomDock" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 hidden">
+    <div id="dockContainer" class="flex items-end h-16 p-2 space-x-2 rounded-2xl">
+    </div>
+  </div>
+  <div id="quotePadTrigger">
+    <button id="quotePadToggleBtn" onclick="openOrCloseQuotePad()">
+      <i class="fas fa-clipboard-list mr-2"></i> Quote Pad
+    </button>
+    <div id="quotePadSlider" class="quote-pad-slider">
+      <div class="quote-pad-top-actions">
+        <button class="btn btn-sm btn-secondary" onclick="saveQuote()">
+          <i class="fas fa-save mr-2"></i> Save
+        </button>
+        <button class="btn btn-sm btn-secondary" onclick="loadPage('loadQuote'); toggleQuotePad(false);">
+          <i class="fas fa-folder-open mr-2"></i> Load
+        </button>
+      </div>
+      <div class="quote-pad-header">
+        <h3>Quote Pad</h3>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button id="quote-view-btn-edit" class="quote-pad-view-toggle active" onclick="toggleQuotePadView(true)"
+            title="Edit Mode">
+            <i class="fas fa-pen"></i>
+          </button>
+          <button id="quote-view-btn-static" class="quote-pad-view-toggle" onclick="toggleQuotePadView(false)"
+            title="View Mode">
+            <i class="fas fa-list-alt"></i>
+          </button>
+          <div style="width: 1px; height: 20px; background-color: var(--border-color); margin: 0 4px;"></div>
+          <button onclick="toggleQuotePad(false)" class="close-btn" style="position: static;">&times;</button>
+        </div>
+      </div>
+      <div id="quotePadItems" class="quote-pad-items">
+      </div>
+      <div class="quote-pad-footer">
+        <div class="quote-pad-total">
+          <strong>Total:</strong>
+          <span id="quotePadTotal">RM 0.00</span>
+        </div>
+        <div class="quote-pad-actions">
+          <button class="btn btn-sm btn-danger" onclick="clearPad()">Clear All</button>
+          <button class="btn btn-sm btn-primary" onclick="copyAllFromPad()">Copy All</button>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+    <!-- Toast Notification Container (Global) -->
+    <div class="toast-container" id="toastContainer">
+      <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Downloaded successfully!</span>
+      </div>
+    </div>
+
+  <!-- Stamp Compare Modal -->
+  <!-- Acrylic Compare Modal -->
+  <div id="acrylicCompareModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto"
+       onclick="if(event.target.id==='acrylicCompareModal') closeAcrylicCompareModal()">
+    <div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden max-h-[90vh] w-[95vw] max-w-6xl flex flex-col">
+      <div class="flex justify-between items-center px-6 py-4 bg-white dark:bg-gray-800 border-b-2 border-gray-300 dark:border-gray-600 sticky top-0 z-20 shadow-md">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Customer vs Agent Price Comparison</h2>
+        <button onclick="closeAcrylicCompareModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="flex flex-1 overflow-hidden gap-4 p-4">
+        <!-- Customer Side -->
+        <div id="acrylicCompareCustScroll" class="compare-scroll flex-1 overflow-y-auto bg-blue-50 dark:bg-gray-900 rounded-lg border-2 border-blue-200 dark:border-blue-900">
+          <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 sticky top-0 bg-blue-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-blue-200 dark:border-blue-800">
+            <i class="fas fa-user mr-2"></i>CUSTOMER PRICE
+          </h3>
+          <div id="acrylicCompareCustPanel" class="p-4 space-y-4"></div>
+        </div>
+        <!-- Agent Side -->
+        <div id="acrylicCompareAgentScroll" class="compare-scroll flex-1 overflow-y-auto bg-green-50 dark:bg-gray-900 rounded-lg border-2 border-green-200 dark:border-green-900">
+          <h3 class="text-lg font-bold text-green-600 dark:text-green-400 sticky top-0 bg-green-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-green-200 dark:border-green-800">
+            <i class="fas fa-user-tie mr-2"></i>AGENT PRICE
+          </h3>
+          <div id="acrylicCompareAgentPanel" class="p-4 space-y-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stand Compare Modal -->
+  <div id="standCompareModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto"
+       onclick="if(event.target.id==='standCompareModal') closeStandCompareModal()">
+    <div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden max-h-[90vh] w-[95vw] max-w-6xl flex flex-col">
+      <div class="flex justify-between items-center px-6 py-4 bg-white dark:bg-gray-800 border-b-2 border-gray-300 dark:border-gray-600 sticky top-0 z-20 shadow-md">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Customer vs Agent Price Comparison</h2>
+        <button onclick="closeStandCompareModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="flex flex-1 overflow-hidden gap-4 p-4">
+        <!-- Customer Side -->
+        <div id="standCompareCustScroll" class="compare-scroll flex-1 overflow-y-auto bg-blue-50 dark:bg-gray-900 rounded-lg border-2 border-blue-200 dark:border-blue-900">
+          <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 sticky top-0 bg-blue-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-blue-200 dark:border-blue-800">
+            <i class="fas fa-user mr-2"></i>CUSTOMER PRICE
+          </h3>
+          <div id="standCompareCustPanel" class="p-4 space-y-4"></div>
+        </div>
+        <!-- Agent Side -->
+        <div id="standCompareAgentScroll" class="compare-scroll flex-1 overflow-y-auto bg-green-50 dark:bg-gray-900 rounded-lg border-2 border-green-200 dark:border-green-900">
+          <h3 class="text-lg font-bold text-green-600 dark:text-green-400 sticky top-0 bg-green-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-green-200 dark:border-green-800">
+            <i class="fas fa-user-tie mr-2"></i>AGENT PRICE
+          </h3>
+          <div id="standCompareAgentPanel" class="p-4 space-y-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DTF Compare Modal -->
+  <div id="dtfCompareModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto"
+       onclick="if(event.target.id==='dtfCompareModal') closeDTFCompareModal()">
+    <div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden max-h-[90vh] w-[95vw] max-w-6xl flex flex-col">
+      <div class="flex justify-between items-center px-6 py-4 bg-white dark:bg-gray-800 border-b-2 border-gray-300 dark:border-gray-600 sticky top-0 z-20 shadow-md">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Customer vs Agent Price Comparison</h2>
+        <button onclick="closeDTFCompareModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="flex flex-1 overflow-hidden gap-4 p-4">
+        <div id="dtfCompareCustScroll" class="compare-scroll flex-1 overflow-y-auto bg-blue-50 dark:bg-gray-900 rounded-lg border-2 border-blue-200 dark:border-blue-900">
+          <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 sticky top-0 bg-blue-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-blue-200 dark:border-blue-800">
+            <i class="fas fa-user mr-2"></i>CUSTOMER PRICE
+          </h3>
+          <div id="dtfCompareCustPanel" class="p-4 space-y-4"></div>
+        </div>
+        <div id="dtfCompareAgentScroll" class="compare-scroll flex-1 overflow-y-auto bg-green-50 dark:bg-gray-900 rounded-lg border-2 border-green-200 dark:border-green-900">
+          <h3 class="text-lg font-bold text-green-600 dark:text-green-400 sticky top-0 bg-green-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-green-200 dark:border-green-800">
+            <i class="fas fa-user-tie mr-2"></i>AGENT PRICE
+          </h3>
+          <div id="dtfCompareAgentPanel" class="p-4 space-y-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sublimation Compare Modal -->
+  <div id="sublimationCompareModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto"
+       onclick="if(event.target.id==='sublimationCompareModal') closeSublimationCompareModal()">
+    <div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden max-h-[90vh] w-[95vw] max-w-6xl flex flex-col">
+      <div class="flex justify-between items-center px-6 py-4 bg-white dark:bg-gray-800 border-b-2 border-gray-300 dark:border-gray-600 sticky top-0 z-20 shadow-md">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Customer vs Agent Price Comparison</h2>
+        <button onclick="closeSublimationCompareModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="flex flex-1 overflow-hidden gap-4 p-4">
+        <!-- Customer Side -->
+        <div id="sublCompareCustScroll" class="compare-scroll flex-1 overflow-y-auto bg-blue-50 dark:bg-gray-900 rounded-lg border-2 border-blue-200 dark:border-blue-900">
+          <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 sticky top-0 bg-blue-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-blue-200 dark:border-blue-800">
+            <i class="fas fa-user mr-2"></i>CUSTOMER PRICE
+          </h3>
+          <div id="sublCompareCustPanel" class="p-4 space-y-4"></div>
+        </div>
+        <!-- Agent Side -->
+        <div id="sublCompareAgentScroll" class="compare-scroll flex-1 overflow-y-auto bg-green-50 dark:bg-gray-900 rounded-lg border-2 border-green-200 dark:border-green-900">
+          <h3 class="text-lg font-bold text-green-600 dark:text-green-400 sticky top-0 bg-green-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-green-200 dark:border-green-800">
+            <i class="fas fa-user-tie mr-2"></i>AGENT PRICE
+          </h3>
+          <div id="sublCompareAgentPanel" class="p-4 space-y-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="stampCompareModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto"
+       onclick="if(event.target.id==='stampCompareModal') closeStampCompareModal()">
+    <div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden max-h-[90vh] w-[95vw] max-w-6xl flex flex-col">
+      <div class="flex justify-between items-center px-6 py-4 bg-white dark:bg-gray-800 border-b-2 border-gray-300 dark:border-gray-600 sticky top-0 z-20 shadow-md">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Customer vs Agent Price Comparison</h2>
+        <button onclick="closeStampCompareModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="flex flex-1 overflow-hidden gap-4 p-4">
+        <!-- Customer Side -->
+        <div id="stampCompareCustScroll" class="compare-scroll flex-1 overflow-y-auto bg-blue-50 dark:bg-gray-900 rounded-lg border-2 border-blue-200 dark:border-blue-900">
+          <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 sticky top-0 bg-blue-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-blue-200 dark:border-blue-800">
+            <i class="fas fa-user mr-2"></i>CUSTOMER PRICE
+          </h3>
+          <div id="stampCompareCustPanel" class="p-4 space-y-4"></div>
+        </div>
+        <!-- Agent Side -->
+        <div id="stampCompareAgentScroll" class="compare-scroll flex-1 overflow-y-auto bg-green-50 dark:bg-gray-900 rounded-lg border-2 border-green-200 dark:border-green-900">
+          <h3 class="text-lg font-bold text-green-600 dark:text-green-400 sticky top-0 bg-green-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-green-200 dark:border-green-800">
+            <i class="fas fa-user-tie mr-2"></i>AGENT PRICE
+          </h3>
+          <div id="stampCompareAgentPanel" class="p-4 space-y-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lanyard Compare Modal -->
+  <div id="lanyardCompareModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto"
+       onclick="if(event.target.id==='lanyardCompareModal') closeLanyardCompareModal()">
+    <div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden max-h-[90vh] w-[95vw] max-w-6xl flex flex-col">
+      <div class="flex justify-between items-center px-6 py-4 bg-white dark:bg-gray-800 border-b-2 border-gray-300 dark:border-gray-600 sticky top-0 z-20 shadow-md">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Customer vs Agent Price Comparison</h2>
+        <button onclick="closeLanyardCompareModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="flex flex-1 overflow-hidden gap-4 p-4">
+        <!-- Customer Side -->
+        <div id="lanyardCompareCustScroll" class="compare-scroll flex-1 overflow-y-auto bg-blue-50 dark:bg-gray-900 rounded-lg border-2 border-blue-200 dark:border-blue-900">
+          <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 sticky top-0 bg-blue-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-blue-200 dark:border-blue-800">
+            <i class="fas fa-user mr-2"></i>CUSTOMER PRICE
+          </h3>
+          <div id="lanyardCompareCustPanel" class="p-4 space-y-4"></div>
+        </div>
+        <!-- Agent Side -->
+        <div id="lanyardCompareAgentScroll" class="compare-scroll flex-1 overflow-y-auto bg-green-50 dark:bg-gray-900 rounded-lg border-2 border-green-200 dark:border-green-900">
+          <h3 class="text-lg font-bold text-green-600 dark:text-green-400 sticky top-0 bg-green-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-green-200 dark:border-green-800">
+            <i class="fas fa-user-tie mr-2"></i>AGENT PRICE
+          </h3>
+          <div id="lanyardCompareAgentPanel" class="p-4 space-y-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Business Card Compare Modal -->
+  <div id="businessCardCompareModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto"
+       onclick="if(event.target.id==='businessCardCompareModal') closeBusinessCardCompareModal()">
+    <div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden max-h-[90vh] w-[95vw] max-w-6xl flex flex-col">
+      <div class="flex justify-between items-center px-6 py-4 bg-white dark:bg-gray-800 border-b-2 border-gray-300 dark:border-gray-600 sticky top-0 z-20 shadow-md">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Customer vs Agent Price Comparison</h2>
+        <button onclick="closeBusinessCardCompareModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="flex flex-1 overflow-hidden gap-4 p-4">
+        <!-- Customer Side -->
+        <div id="bcCompareCustScroll" class="compare-scroll flex-1 overflow-y-auto bg-blue-50 dark:bg-gray-900 rounded-lg border-2 border-blue-200 dark:border-blue-900">
+          <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 sticky top-0 bg-blue-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-blue-200 dark:border-blue-800">
+            <i class="fas fa-user mr-2"></i>CUSTOMER PRICE
+          </h3>
+          <div id="bcCompareCustPanel" class="p-4 space-y-4"></div>
+        </div>
+        <!-- Agent Side -->
+        <div id="bcCompareAgentScroll" class="compare-scroll flex-1 overflow-y-auto bg-green-50 dark:bg-gray-900 rounded-lg border-2 border-green-200 dark:border-green-900">
+          <h3 class="text-lg font-bold text-green-600 dark:text-green-400 sticky top-0 bg-green-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-green-200 dark:border-green-800">
+            <i class="fas fa-user-tie mr-2"></i>AGENT PRICE
+          </h3>
+          <div id="bcCompareAgentPanel" class="p-4 space-y-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invitation Card Compare Modal -->
+  <div id="invitationCompareModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto"
+       onclick="if(event.target.id==='invitationCompareModal') closeInvitationCompareModal()">
+    <div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden max-h-[90vh] w-[95vw] max-w-6xl flex flex-col">
+      <div class="flex justify-between items-center px-6 py-4 bg-white dark:bg-gray-800 border-b-2 border-gray-300 dark:border-gray-600 sticky top-0 z-20 shadow-md">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Customer vs Agent Price Comparison</h2>
+        <button onclick="closeInvitationCompareModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="flex flex-1 overflow-hidden gap-4 p-4">
+        <!-- Customer Side -->
+        <div id="invCompareCustScroll" class="compare-scroll flex-1 overflow-y-auto bg-blue-50 dark:bg-gray-900 rounded-lg border-2 border-blue-200 dark:border-blue-900">
+          <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 sticky top-0 bg-blue-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-blue-200 dark:border-blue-800">
+            <i class="fas fa-user mr-2"></i>CUSTOMER PRICE
+          </h3>
+          <div id="invCompareCustPanel" class="p-4 space-y-4"></div>
+        </div>
+        <!-- Agent Side -->
+        <div id="invCompareAgentScroll" class="compare-scroll flex-1 overflow-y-auto bg-green-50 dark:bg-gray-900 rounded-lg border-2 border-green-200 dark:border-green-900">
+          <h3 class="text-lg font-bold text-green-600 dark:text-green-400 sticky top-0 bg-green-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-green-200 dark:border-green-800">
+            <i class="fas fa-user-tie mr-2"></i>AGENT PRICE
+          </h3>
+          <div id="invCompareAgentPanel" class="p-4 space-y-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ID Card Compare Modal -->
+  <div id="idCardCompareModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto"
+       onclick="if(event.target.id==='idCardCompareModal') closeIDCardCompareModal()">
+    <div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden max-h-[90vh] w-[95vw] max-w-6xl flex flex-col">
+      <div class="flex justify-between items-center px-6 py-4 bg-white dark:bg-gray-800 border-b-2 border-gray-300 dark:border-gray-600 sticky top-0 z-20 shadow-md">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Customer vs Agent Price Comparison</h2>
+        <button onclick="closeIDCardCompareModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="flex flex-1 overflow-hidden gap-4 p-4">
+        <!-- Customer Side -->
+        <div id="idCardCompareCustScroll" class="compare-scroll flex-1 overflow-y-auto bg-blue-50 dark:bg-gray-900 rounded-lg border-2 border-blue-200 dark:border-blue-900">
+          <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 sticky top-0 bg-blue-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-blue-200 dark:border-blue-800">
+            <i class="fas fa-user mr-2"></i>CUSTOMER PRICE
+          </h3>
+          <div id="idCardCompareCustPanel" class="p-4 space-y-4"></div>
+        </div>
+        <!-- Agent Side -->
+        <div id="idCardCompareAgentScroll" class="compare-scroll flex-1 overflow-y-auto bg-green-50 dark:bg-gray-900 rounded-lg border-2 border-green-200 dark:border-green-900">
+          <h3 class="text-lg font-bold text-green-600 dark:text-green-400 sticky top-0 bg-green-50 dark:bg-gray-900 py-3 px-4 z-20 border-b-2 border-green-200 dark:border-green-800">
+            <i class="fas fa-user-tie mr-2"></i>AGENT PRICE
+          </h3>
+          <div id="idCardCompareAgentPanel" class="p-4 space-y-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Asset Picker Modal -->
+  <div id="assetPickerModal" class="fixed inset-0 z-[80] hidden items-center justify-center" style="background-color: rgba(0,0,0,0.65);" onclick="if(event.target===this)closeAssetPicker()">
+    <div class="rounded-xl shadow-2xl w-full max-w-2xl mx-4 flex flex-col" style="background: var(--content-bg); max-height: 82vh;">
+      <div class="flex items-center justify-between px-5 py-4" style="border-bottom: 1px solid var(--border-color);">
+        <h3 class="text-base font-semibold" style="color: var(--text-primary);"><i class="fas fa-images mr-2" style="color:#14b8a6;"></i>Pick an Icon</h3>
+        <button onclick="closeAssetPicker()" style="background:none; border:none; cursor:pointer; font-size:22px; line-height:1; color: var(--text-secondary);">&times;</button>
+      </div>
+      <div id="assetPickerTabs" class="flex flex-wrap gap-2 px-5 pt-3 pb-2 flex-shrink-0">
+        <!-- Populated dynamically by openAssetPicker() -->
+      </div>
+      <div class="px-5 pb-2 flex-shrink-0">
+        <input type="text" id="assetPickerSearch" placeholder="Search assets..."
+               class="asset-search-input" oninput="filterPickerAssets(this.value)">
+      </div>
+      <div id="assetPickerGrid" class="overflow-y-auto flex-1 px-5 py-3">
+        <!-- Populated by openAssetPicker() -->
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  </body>
+</html>

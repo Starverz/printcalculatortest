@@ -1,0 +1,3969 @@
+html {
+  scroll-behavior: smooth;
+}
+/* =================================== */
+/* == 1. Root & Global Styles == */
+/* =================================== */
+/* Smooth Panel Transitions */
+.panel-collapsible {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease-out, opacity 0.25s ease-out, padding 0.3s ease-out, margin 0.3s ease-out;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-top: 0 !important;
+  border: none !important;
+}
+
+.panel-collapsible.panel-open {
+  max-height: 500px;
+  opacity: 1;
+  overflow: visible;
+  padding-top: 16px !important;
+  padding-bottom: 16px !important;
+  margin-top: 10px !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.sticker-editor-wrapper .panel-collapsible.panel-open {
+  margin-top: 8px !important;
+}
+
+.panel-collapsible.sf-panel.panel-open {
+  max-height: 2000px;
+}
+
+#stickerSmartFinderPanel,
+#stickerSpacingPanel {
+  background-color: #eef2f6; 
+}
+
+html.dark #stickerSmartFinderPanel,
+html.dark #stickerSpacingPanel {
+  background-color: var(--light-bg);
+}
+
+#stickerSmartFinderPanel .size-btn.active {
+  transform: none;
+  box-shadow: none;
+}
+
+:root {
+  --primary-color: #007BFF;
+  --primary-color: #007BFF;
+  --primary-hover: #0056b3;
+  --secondary-color: #6c757d;
+  --accent-color: #17a2b8;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --light-bg: #f8f9fa;
+  --content-bg: #ffffff;
+  --border-color: #dee2e6;
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --border-radius: 8px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+html.dark {
+  --light-bg: #111827;
+  --content-bg: #1f2937;
+  --border-color: #374151;
+  --text-primary: #f3f4f6;
+  --text-secondary: #d1d5db;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Toast Notification */
+.toast-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.toast {
+  background: #28a745;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateX(100px);
+  transition: all 0.3s ease;
+}
+
+.toast.toast-show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.toast i {
+  font-size: 16px;
+}
+
+/* Row Move Highlight Animation */
+@keyframes row-highlight-blink {
+  0% { background-color: rgba(168, 85, 247, 0); }
+  50% { background-color: rgba(168, 85, 247, 0.4); }
+  100% { background-color: rgba(168, 85, 247, 0); }
+}
+
+html.dark {
+  --row-highlight-bg: rgba(147, 51, 234, 0.3);
+  --row-highlight-border: rgba(147, 51, 234, 0.7);
+}
+
+.row-highlight {
+  animation: row-highlight-blink 1s ease-in-out 2;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: var(--light-bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+canvas {
+  margin-top: 16px;
+  border: 1px solid var(--border-color);
+  max-width: 100%;
+  background: #fff;
+  border-radius: var(--border-radius);
+}
+
+@keyframes aurora-glow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* 1. Main Dimensions (Your 14px preference) */
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+/* 2. Track: Transparent (No white box) */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 3. Thumb: Floating Grey Pill */
+::-webkit-scrollbar-thumb {
+  background-color: #a0aec0;
+  /* Medium Grey */
+  border-radius: 7px;
+  /* Perfectly round ends (14px / 2) */
+  border: 3px solid transparent;
+  /* Padding so it floats */
+  background-clip: content-box;
+  /* Clips color to inside border */
+}
+
+/* 4. Interaction States */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #718096;
+  /* Darker on hover */
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: #4a5568;
+  /* Even darker when dragging */
+}
+
+/* 5. Corner: Fixes white square at intersections */
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* 6. Dark Mode Logic */
+html.dark ::-webkit-scrollbar-thumb {
+  background-color: #4a5568;
+  /* Darker base for dark mode */
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #718096;
+  /* Lighter on hover for visibility */
+}
+
+html.dark ::-webkit-scrollbar-thumb:active {
+  background-color: #a0aec0;
+  /* Brightest when dragging */
+}
+
+/* =================================== */
+/* == 2. Typography == */
+/* =================================== */
+.content h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.content p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+label {
+  font-weight: 600;
+  margin: 8px 0 4px 0;
+  /* Reduced top and bottom margins */
+  display: block;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+/* =================================== */
+/* == 3. Base Form Elements == */
+/* =================================== */
+input[type="number"],
+input[type="text"],
+select,
+textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 4x;
+  font-size: 16px;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Unit Toggle Animation */
+.unit-value-animate {
+  animation: unitValuePulse 0.4s ease-out;
+}
+
+@keyframes unitValuePulse {
+  0% {
+    background-color: rgba(79, 70, 229, 0.2);
+    transform: scale(1.02);
+  }
+
+  100% {
+    background-color: #fff;
+    transform: scale(1);
+  }
+}
+
+html.dark .unit-value-animate {
+  animation: unitValuePulseDark 0.4s ease-out;
+}
+
+@keyframes unitValuePulseDark {
+  0% {
+    background-color: rgba(129, 140, 248, 0.3);
+    transform: scale(1.02);
+  }
+
+  100% {
+    background-color: var(--input-bg);
+    transform: scale(1);
+  }
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin-bottom: 0;
+}
+
+.checkbox-group label {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* =================================== */
+/* == 4. Main Layout & Navigation == */
+/* =================================== */
+/* --- Homepage --- */
+.homepage-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background-image: url('https://images.unsplash.com/photo-1659772846955-456debf2737f?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.home-grid {
+  /* --- CHANGED BACK TO GRID WITH SMART CENTERING --- */
+  display: grid;
+  /* auto-fit creates as many columns as fit, but collapses empty ones */
+  grid-template-columns: repeat(auto-fit, 250px);
+  gap: 24px;
+  justify-content: center;
+  /* Centers the whole grid block on screen */
+
+  max-width: 1100px;
+  margin: 24px auto 0;
+  position: relative;
+  z-index: 1;
+}
+
+.home-card {
+  /* --- RESET WIDTH TO FILL GRID TRACK --- */
+  width: 100%;
+  height: 100%;
+  /* Ensures consistent height */
+
+  position: relative;
+  padding: 24px;
+  border-radius: 16px;
+  color: white;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+  /* This creates the main semi-transparent glass effect */
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.home-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  background: linear-gradient(145deg, var(--card-color), transparent);
+  background-size: 200% 100%;
+  background-position: 10% 0;
+  /* Adjust this value to shift the gradient */
+  opacity: 1;
+  /* Remove the transition property to prevent animation */
+}
+
+.home-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.home-card-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.home-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  position: relative;
+  z-index: 2;
+}
+
+/* --- Main Content Area --- */
+.content {
+  padding: 32px;
+  padding-bottom: 95px;
+  /* ADD THIS LINE - Creates scrollable space for the dock */
+  overflow-y: auto;
+}
+
+/* --- Bottom Dock --- */
+#bottomDock {
+  /* This is the new stationary container */
+  width: 650px;
+  /* A fixed width to prevent the dock from resizing */
+  display: flex;
+  justify-content: center;
+  /* Center the icon container within it */
+}
+
+#dockContainer {
+  display: flex;
+  align-items: flex-end;
+  height: 64px;
+  /* 4rem */
+  padding: 8px;
+  /* p-2 */
+  gap: 16px;
+  /* space-x-4 */
+  background-color: rgba(240, 240, 240, 0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  border-radius: 1.25rem;
+  /* rounded-2xl */
+  transition: all 0.2s;
+}
+
+.dock-item {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.3);
+  /* ADD THIS LINE */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  cursor: pointer;
+  position: relative;
+  will-change: width, height;
+  /* NEW: Individual glass effect for each icon */
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dock-label {
+  position: absolute;
+  bottom: 130%;
+  background-color: rgba(20, 20, 20, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.dock-item:hover .dock-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- Side Navigation Drawer (Flowbite) --- */
+#drawer-navigation a.sidebar-active {
+  background-color: #3b82f6;
+  /* Tailwind's blue-500 */
+  color: white;
+}
+
+#drawer-navigation a.sidebar-active i,
+#drawer-navigation a.sidebar-active svg {
+  color: white;
+}
+
+div[data-drawer-backdrop] {
+  background-color: rgba(55, 65, 81, 0.5);
+  /* A dark gray at 50% opacity */
+}
+
+/* =================================== */
+/* == 5. Reusable Components == */
+/* =================================== */
+/* --- Buttons (Base) --- */
+.btn {
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+.btn-primary {
+  width: 100%;
+  background: var(--primary-color);
+  color: #fff;
+  margin-top: 24px;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--secondary-color);
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background: #5a6268;
+}
+
+/* Light Mode override for custom white border toggle button */
+#customBorderToggle.btn-secondary {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid var(--border-color);
+}
+
+#customBorderToggle.btn-primary.agent-active {
+  background: var(--success-color);
+  border-color: var(--success-color);
+  color: #fff;
+}
+
+#customBorderToggle.btn-primary.agent-active:hover {
+  background: #218838;
+  border-color: #218838;
+}
+
+#customBorderToggle.btn-secondary:hover {
+  background-color: #f8f9fa;
+}
+
+/* Prevent override in Dark Mode */
+html.dark #customBorderToggle.btn-secondary {
+  background-color: #374151;
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+/* Light Mode Edit & Manage Buttons in Settings */
+.settings-panel .btn-secondary:not(#customBorderToggle) {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid var(--border-color);
+}
+
+.settings-panel .btn-secondary:not(#customBorderToggle):hover {
+  background-color: #f8f9fa;
+}
+
+/* Dark Mode - Keep default styling */
+html.dark .settings-panel .btn-secondary:not(#customBorderToggle) {
+  background-color: #374151;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+html.dark .settings-panel .btn-secondary:not(#customBorderToggle):hover {
+  background-color: #4b5563;
+}
+
+/* Light Mode - Input fields during edit in settings */
+.settings-table input[type="text"],
+.settings-table input[type="number"],
+.settings-table select {
+  background-color: #f3f4f6 !important;
+  color: #000000 !important;
+  border: 1px solid #e5e7eb !important;
+  text-align: center;
+  text-align-last: center;
+}
+
+.settings-table input[type="text"]:focus,
+.settings-table input[type="number"]:focus,
+.settings-table select:focus {
+  background-color: #ffffff !important;
+  border-color: #d1d5db !important;
+}
+
+/* Dark Mode - Keep input styling as-is (don't override) */
+html.dark .settings-table input[type="text"],
+html.dark .settings-table input[type="number"],
+html.dark .settings-table select {
+  background-color: #374151 !important;
+  color: #ffffff !important;
+  border-color: #4b5563 !important;
+}
+
+/* Light Mode - Up/Down buttons in edit mode (Actions column) */
+.settings-table .btn-secondary {
+  background-color: #f3f4f6 !important;
+  color: #000000 !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.settings-table .btn-secondary:hover {
+  background-color: #e5e7eb !important;
+  border-color: #d1d5db !important;
+}
+
+/* Dark Mode - Keep button styling as-is */
+html.dark .settings-table .btn-secondary {
+  background-color: #374151 !important;
+  color: #ffffff !important;
+  border-color: #4b5563 !important;
+}
+
+html.dark .settings-table .btn-secondary:hover {
+  background-color: #4b5563 !important;
+  border-color: #5a6370 !important;
+}
+
+.btn-danger {
+  background: var(--danger-color);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+}
+
+.btn-link {
+  background: var(--accent-color);
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  display: block;
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+  padding: 12px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.btn-link:hover {
+  background: #138496;
+}
+
+/* --- Size/Toggle Buttons --- */
+.size-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.size-btn {
+  padding: 10px 16px;
+  background: var(--content-bg);
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all .2s ease;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.size-btn:hover {
+  background: var(--light-bg);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.size-btn.active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* --- Modern Checkboxes --- */
+.modern-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.modern-checkbox-grid .checkbox-group {
+  margin: 0;
+  background-color: #fff;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: all .2s ease-in-out;
+}
+
+.modern-checkbox-grid .checkbox-group:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.modern-checkbox-grid input[type="checkbox"] {
+  opacity: 0;
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.modern-checkbox-grid label {
+  position: relative;
+  padding-left: 32px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.modern-checkbox-grid label::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  background: #fff;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.modern-checkbox-grid label::after {
+  content: '✔';
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%) scale(0);
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.modern-checkbox-grid input[type="checkbox"]:checked+label::before {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.modern-checkbox-grid input[type="checkbox"]:checked+label::after {
+  transform: translateY(-50%) scale(1);
+}
+
+/* --- Result / Invoice Base --- */
+.result {
+  margin-top: 16px;
+  padding: 15px;
+  background: var(--light-bg);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.result strong {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.invoice-copy-area {
+  margin-top: 24px;
+  position: relative;
+  /* This is the new line */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.invoice-copy-area textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  font-family: 'Menlo', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  background-color: #e9ecef;
+  color: #495057;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  resize: vertical;
+}
+
+.invoice-copy-area button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: auto;
+  /* Make the button a bit smaller */
+  padding: 6px 12px;
+  font-size: 14px;
+  margin-top: 0;
+  /* Remove the old margin */
+  flex: 1 1 auto;
+}
+
+.invoice-copy-area label,
+.invoice-copy-area textarea {
+  width: 100%;
+}
+
+.invoice {
+  margin-top: 32px;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.invoice-body {
+  padding: 24px;
+}
+
+.invoice-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 16px;
+}
+
+.invoice-row:last-child {
+  border-bottom: none;
+}
+
+.invoice-label {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.invoice-value {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.invoice-nett {
+  background: var(--primary-color);
+  color: #fff;
+  padding: 16px 24px;
+  text-align: right;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* --- Add-on Cards (Sublimation/Lanyard) --- */
+.addon-category-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+}
+
+.addon-card-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  column-gap: 6px;
+  /* Reduced horizontal space */
+  row-gap: 0px;
+  /* Kept vertical space */
+  margin-top: 8px;
+}
+
+.addon-card-label {
+  cursor: pointer;
+  display: block;
+}
+
+.addon-card {
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--light-bg);
+  /* This now matches the page background */
+  transition: all 0.2s ease-in-out;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.addon-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-color);
+  box-shadow: var(--shadow-md);
+}
+
+.addon-card-name-box {
+  background-color: var(--light-bg);
+  padding: 6px;
+  text-align: center;
+  height: 50px;
+  /* Changed from min-height to a fixed height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.addon-card-img-container {
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addon-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Changed to cover the entire box */
+}
+
+.addon-card-price-box {
+  background-color: var(--light-bg);
+  padding: 6px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--primary-color);
+}
+
+.addon-card-label input[type="checkbox"],
+.addon-card-label input[type="radio"] {
+  display: none;
+}
+
+.addon-card-label input[type="checkbox"]:checked+.addon-card,
+.addon-card-label input[type="radio"]:checked+.addon-card {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.3);
+}
+
+.addon-card-label input[type="checkbox"]:checked+.addon-card .addon-card-name-box,
+.addon-card-label input[type="checkbox"]:checked+.addon-card .addon-card-price-box,
+.addon-card-label input[type="radio"]:checked+.addon-card .addon-card-name-box,
+.addon-card-label input[type="radio"]:checked+.addon-card .addon-card-price-box {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* --- Text-Only Addon Buttons (no icon) --- */
+.addon-btn-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.addon-btn-label {
+  cursor: pointer;
+  display: block;
+}
+
+.addon-btn-label input[type="checkbox"],
+.addon-btn-label input[type="radio"] {
+  display: none;
+}
+
+.addon-btn {
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--light-bg);
+  transition: all 0.2s ease-in-out;
+  padding: 10px 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.addon-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-color);
+  box-shadow: var(--shadow-md);
+}
+
+.addon-btn-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.addon-btn-price {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--primary-color);
+}
+
+.addon-btn-label input[type="checkbox"]:checked+.addon-btn,
+.addon-btn-label input[type="radio"]:checked+.addon-btn {
+  border-color: var(--primary-color);
+  background-color: var(--primary-color);
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.3);
+}
+
+.addon-btn-label input[type="checkbox"]:checked+.addon-btn .addon-btn-name,
+.addon-btn-label input[type="checkbox"]:checked+.addon-btn .addon-btn-price,
+.addon-btn-label input[type="radio"]:checked+.addon-btn .addon-btn-name,
+.addon-btn-label input[type="radio"]:checked+.addon-btn .addon-btn-price {
+  color: white;
+}
+
+/* --- Settings Table --- */
+.settings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 14px;
+}
+
+.settings-table th,
+.settings-table td {
+  border: 1px solid var(--border-color);
+  padding: 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.settings-table th {
+  background: var(--light-bg);
+  font-weight: 600;
+  text-align: center;
+}
+
+.settings-table tr:nth-child(even) {
+  background: var(--light-bg);
+}
+
+.settings-table .action-col {
+  text-align: center;
+}
+
+.settings-table .action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.settings-table input[type="number"] {
+  padding: 8px;
+  font-size: 14px;
+  max-width: none;
+  width: 100%;
+  text-align: center;
+}
+
+.settings-table .header-2line {
+  line-height: 1.2;
+}
+
+/* Center-align price columns in settings tables */
+.settings-table .customer-price-col,
+.settings-table .agent-price-col {
+  text-align: center;
+}
+
+/* =================================== */
+/* == 6. Page-Specific Styles == */
+/* =================================== */
+/* --- Printing Calculator (Large Format / Signboard) --- */
+.design-filename-wrapper {
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 250px;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+/* Fade effect */
+.design-filename-wrapper::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 80px;
+  background: linear-gradient(to right, transparent, var(--light-bg));
+  pointer-events: none;
+}
+
+/* Dark mode fix for fade */
+html.dark .design-filename-wrapper::after {
+  background: linear-gradient(to right, transparent, var(--light-bg));
+}
+
+/* Text animation */
+#artFileName {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: inline-block;
+  transition: transform 0s;
+  white-space: nowrap;
+}
+
+.design-filename-wrapper:hover #artFileName {
+  animation: scroll-text 5s linear infinite;
+}
+
+@keyframes scroll-text {
+  0% {
+    transform: translateX(0);
+  }
+
+  10% {
+    transform: translateX(0);
+  }
+
+  /* Pause at start */
+  90% {
+    transform: translateX(-100%);
+  }
+
+  /* Scroll to end */
+  100% {
+    transform: translateX(-100%);
+  }
+
+  /* Pause at end */
+}
+
+.material-grid-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  background-color: var(--content-bg);
+  /* --- NEW LINES TO ADD --- */
+  width: 75%;
+  /* Makes it 75% wide, as you requested */
+  max-width: 1100px;
+  /* Gives it a "fixed" max width (consistent with your settings page) */
+  margin: 24px auto 0 auto;
+  /* Replaces 'margin-top' to center the container */
+}
+
+.material-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+/* This is the container's .material-grid, not the homepage .home-grid */
+.material-grid-container .material-grid {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  margin-top: 0;
+  /* The container has the margin-top now */
+}
+
+.material-card {
+  /* 1. Layout & Positioning */
+  position: relative;
+  z-index: 1;
+  /* Establishes a stacking context */
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  cursor: pointer;
+  /* 2. Background & Border */
+  /* We make the main background transparent so ::after can handle the color */
+  background-color: transparent;
+  border-radius: var(--border-radius);
+  /* Default Grey Border (Visible when NOT hovering) */
+  border: 1px solid var(--border-color);
+  /* 3. Animation & Overflow */
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  overflow: visible;
+  /* Allows glow to spill out */
+}
+
+/* LAYER 1: The Neon Gradient (Bottom) */
+.material-card::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  /* Sits at the very bottom */
+  /* Size: Slightly larger than the card to create the stroke thickness */
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  /* The Gradient */
+  background-image: linear-gradient(163deg, #00ffe1 0%, #2a00fa 100%);
+  border-radius: calc(var(--border-radius) + 2px);
+  /* Hidden by default */
+  opacity: 0;
+  transition: opacity 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* LAYER 2: The Solid Background Mask (Middle) */
+.material-card::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  /* Sits above Gradient, but below Text */
+  /* Size: Matches the card exactly */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* The Solid Color (Masks the center of the gradient) */
+  background-color: var(--content-bg);
+  border-radius: var(--border-radius);
+  /* Ensure it blocks clicks if necessary, though parent handles it */
+  pointer-events: none;
+}
+
+/* HOVER STATES */
+.material-card:hover {
+  transform: scale(0.98);
+  border-color: transparent;
+  /* Hide the grey border so neon shines */
+}
+
+.material-card:hover::before {
+  opacity: 1;
+  /* Turn on the gradient layer */
+  box-shadow: 0px 0px 30px 1px rgba(0, 217, 255, 0.30);
+  /* The Glow */
+}
+
+/* ACTIVE / SELECTED STATE */
+.material-card.active {
+  border-color: var(--primary-color);
+  box-shadow: inset 0 0 0 1px var(--primary-color), 0 0 15px rgba(0, 123, 255, 0.3);
+}
+
+/* AGENT MODE STYLES */
+.material-card.agent-active .material-info span {
+  color: var(--success-color);
+}
+
+.material-card.active.agent-active {
+  border-color: var(--success-color);
+  box-shadow: inset 0 0 0 1px var(--success-color), 0 0 15px rgba(40, 167, 69, 0.3);
+}
+
+/* DARK MODE FIXES */
+html.dark .material-card::after {
+  background-color: #1f2937;
+  /* Matches dark theme card bg */
+}
+
+.material-info {
+  padding: 12px 16px;
+  flex-grow: 1;
+}
+
+.material-info strong {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.material-info span {
+  display: block;
+  font-size: 15px;
+  color: var(--primary-color);
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.agent-toggle {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-top: 1px solid var(--border-color);
+  cursor: pointer;
+  color: var(--text-secondary);
+  background: #f8f9fa;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.agent-toggle:hover {
+  background: #e9ecef;
+}
+
+.agent-toggle.agent-active {
+  background: var(--success-color);
+  color: white;
+}
+
+.agent-toggle.agent-active:hover {
+  background: #218838;
+}
+
+.calculator-panel {
+  margin-top: 24px;
+  background: var(--content-bg);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  max-width: 800px;
+  margin-left: auto;
+  /* ADD THIS LINE */
+  margin-right: auto;
+  /* ADD THIS LINE */
+}
+
+.global-toggle-container {
+  width: 75%;
+  /* Match the material-grid-container width */
+  max-width: 1100px;
+  /* Match the material-grid-container max-width */
+  margin: 0 auto 16px auto;
+  /* Center it and add bottom margin */
+  display: flex;
+  justify-content: center;
+}
+
+.global-toggle-container .size-btn-group {
+  width: 100%;
+  max-width: 400px;
+  /* Max width for the button group itself */
+}
+
+.global-toggle-container .size-btn {
+  flex-basis: 0;
+}
+
+.global-toggle-container .size-btn.active-agent {
+  background: var(--success-color);
+  border-color: var(--success-color);
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+  transform: translateY(-2px);
+}
+
+.global-toggle-container .size-btn.active-agent.active {
+  background: var(--success-color);
+  border-color: var(--success-color);
+}
+
+.size-btn.agent-active.active {
+  background: var(--success-color) !important;
+  border-color: var(--success-color) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2) !important;
+}
+
+html.dark .size-btn.agent-active.active {
+  background: var(--success-color) !important;
+  color: #fff !important;
+  border-color: var(--success-color) !important;
+}
+
+.preset-button.agent-active.active {
+  background-color: var(--success-color) !important;
+  border-color: var(--success-color) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2) !important;
+}
+
+html.dark .preset-button.agent-active.active {
+  background-color: var(--success-color) !important;
+  color: #fff !important;
+  border-color: var(--success-color) !important;
+}
+
+.active-control.agent-active {
+  background-color: var(--success-color) !important;
+  color: #fff !important;
+  border-color: var(--success-color) !important;
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2) !important;
+}
+
+html.dark .active-control.agent-active {
+  background-color: var(--success-color) !important;
+  color: #fff !important;
+  border-color: var(--success-color) !important;
+}
+
+.addon-card.agent-active {
+  border-color: rgba(40, 167, 69, 0.5);
+  box-shadow: none;
+}
+
+.addon-card.agent-active .addon-card-name-box,
+.addon-card.agent-active .addon-card-price-box {
+  background-color: #C5EDC5;
+  /* Light green for light mode */
+  color: #004700;
+  /* Dark text for contrast */
+}
+
+html.dark .addon-card.agent-active .addon-card-name-box,
+html.dark .addon-card.agent-active .addon-card-price-box {
+  background-color: #003D25;
+  /* Dark green for dark mode */
+  color: #ffffff;
+}
+
+/* --- Customer mode: Dark blue for unselected cards in DARK MODE ONLY --- */
+html.dark .addon-card:not(.agent-active) .addon-card-name-box,
+html.dark .addon-card:not(.agent-active) .addon-card-price-box {
+  background-color: #111827;
+  /* Dark blue for dark mode */
+  color: #ffffff;
+}
+
+/* Override the checked blue state when customer mode is active */
+.addon-card-label input[type="checkbox"]:checked+.addon-card:not(.agent-active),
+.addon-card-label input[type="radio"]:checked+.addon-card:not(.agent-active) {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.3) !important;
+}
+
+.addon-card-label input[type="checkbox"]:checked+.addon-card:not(.agent-active) .addon-card-name-box,
+.addon-card-label input[type="checkbox"]:checked+.addon-card:not(.agent-active) .addon-card-price-box,
+.addon-card-label input[type="radio"]:checked+.addon-card:not(.agent-active) .addon-card-name-box,
+.addon-card-label input[type="radio"]:checked+.addon-card:not(.agent-active) .addon-card-price-box {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+}
+
+/* Override the checked blue state when agent mode is active */
+.addon-card-label input[type="checkbox"]:checked+.addon-card.agent-active,
+.addon-card-label input[type="radio"]:checked+.addon-card.agent-active {
+  border-color: var(--success-color) !important;
+  box-shadow: 0 0 15px rgba(40, 167, 69, 0.3) !important;
+}
+
+.addon-card-label input[type="checkbox"]:checked+.addon-card.agent-active .addon-card-name-box,
+.addon-card-label input[type="checkbox"]:checked+.addon-card.agent-active .addon-card-price-box,
+.addon-card-label input[type="radio"]:checked+.addon-card.agent-active .addon-card-name-box,
+.addon-card-label input[type="radio"]:checked+.addon-card.agent-active .addon-card-price-box {
+  background-color: var(--success-color) !important;
+  color: white !important;
+}
+
+.acrylic-invoice-buttons-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.acrylic-invoice-buttons-container #addAcrylicToPadBtn {
+  flex-grow: 1;
+  width: auto;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  background-color: var(--success-color);
+  margin-top: 0;
+}
+
+.acrylic-invoice-buttons-container #addAcrylicToPadBtn:hover {
+  background-color: #218838;
+}
+
+.acrylic-invoice-buttons-container #addLanyardToPadBtn {
+  flex-grow: 1;
+  width: auto;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  background-color: var(--success-color);
+  color: white;
+  /* Ensures text is white */
+  margin-top: 3;
+}
+
+.acrylic-invoice-buttons-container #addLanyardToPadBtn:hover {
+  background-color: #218838;
+}
+
+.acrylic-invoice-buttons-container #copyLanyardInvoiceBtn {
+  width: auto;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  margin-top: 23px;
+}
+
+.settings-panel #copyableInvoice {
+  background-color: #e9ecef;
+  /* Light grey background */
+  color: #495057;
+  /* Dark text */
+  font-family: 'Menlo', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  height: 160px;
+  padding: 12px;
+  border-color: var(--border-color);
+}
+
+.acrylic-invoice-buttons-container+.relative #copyableInvoice {
+  width: 100%;
+  height: 160px;
+}
+
+/* --- Sticker Layout Editor --- */
+.sticker-editor-wrapper {
+  font-family: 'Poppins', sans-serif;
+  padding: 25px;
+  background: var(--light-bg);
+  /* Now uses the theme's background color */
+  color: #333;
+  line-height: 1.6;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sticker-editor-wrapper h2 {
+  text-align: center;
+  color: #0056b3;
+  margin-bottom: 30px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.sticker-editor-wrapper .calculator-panel {
+  /* max-width: 880px;  Removed to use default */
+  margin: 0 auto;
+  background: #ffffff;
+  /* padding: 35px 45px;  Removed to use default */
+  /* border-radius: 15px;  Removed to use default */
+  /* box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);  Removed to use default */
+}
+
+.sticker-editor-wrapper h2 {
+  /* text-align: center;  Inherit or use Tailwind */
+  /* color: #0056b3;  Use Tailwind */
+  /* margin-bottom: 30px;  Use Tailwind mb-6 */
+  /* font-size: 24px;  Use Tailwind text-3xl */
+  /* font-weight: 700;  Use Tailwind font-bold */
+}
+
+/* Ensure toggle buttons show border in light mode and correct active colors */
+.sticker-editor-wrapper .global-toggle-container .size-btn {
+  border: 1px solid var(--border-color);
+  background: var(--content-bg);
+  color: var(--text-secondary);
+}
+
+.sticker-editor-wrapper .global-toggle-container .size-btn.active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #fff;
+}
+
+.sticker-editor-wrapper .global-toggle-container .size-btn.active-agent {
+  background: var(--success-color);
+  border-color: var(--success-color);
+  color: #fff;
+}
+
+.sticker-editor-wrapper label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+  color: #475569;
+}
+
+.sticker-editor-wrapper input[type="number"],
+.sticker-editor-wrapper select {
+  font-family: 'Poppins', sans-serif;
+  /* padding: 14px 18px;  Overridden by Tailwind inline classes */
+  padding: 8px 12px;
+  /* Match Large Format default closely or rely on Tailwind */
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  box-sizing: border-box;
+  /* font-size: 1.08em;  Removed to match Large Format default */
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* ===== Custom Sticker Material Dropdown ===== */
+.custom-sticker-dropdown {
+  position: relative;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.custom-sticker-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  height: 44px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  user-select: none;
+  gap: 8px;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.2s ease;
+}
+
+.custom-sticker-dropdown-trigger:hover {
+  border-color: #007bff;
+}
+
+.custom-sticker-dropdown-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.custom-sticker-dropdown-arrow {
+  flex-shrink: 0;
+  color: #6b7280;
+  transition: transform 0.2s ease;
+}
+
+.custom-sticker-dropdown.open .custom-sticker-dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.custom-sticker-dropdown-list, .custom-sticker-dropdown-options {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    max-height: 260px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    z-index: 200;
+    scrollbar-width: thin;
+    scrollbar-color: #a0aec0 transparent;
+  }
+
+  .custom-sticker-dropdown.open .custom-sticker-dropdown-list,
+  .custom-sticker-dropdown.open .custom-sticker-dropdown-options {
+    display: block;
+  }
+
+  .custom-sticker-dropdown-option {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    color: #374151;
+    transition: background 0.1s;
+  }
+
+  .custom-sticker-dropdown-option:hover {
+    background: #f1f5f9;
+  }
+
+  .custom-sticker-dropdown-option.selected {
+    background: #3b82f6;
+    color: #ffffff;
+  }
+
+  .custom-sticker-dropdown-list::-webkit-scrollbar,
+  .custom-sticker-dropdown-options::-webkit-scrollbar {
+    width: 14px;
+  }
+
+  .custom-sticker-dropdown-list::-webkit-scrollbar-track,
+  .custom-sticker-dropdown-options::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-sticker-dropdown-list::-webkit-scrollbar-thumb,
+  .custom-sticker-dropdown-options::-webkit-scrollbar-thumb {
+    background-color: #a0aec0;
+    border-radius: 7px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+
+  .custom-sticker-dropdown-list::-webkit-scrollbar-thumb:hover,
+  .custom-sticker-dropdown-options::-webkit-scrollbar-thumb:hover {
+    background-color: #718096;
+  }
+
+  .custom-sticker-dropdown-list::-webkit-scrollbar-thumb:active,
+  .custom-sticker-dropdown-options::-webkit-scrollbar-thumb:active {
+    background-color: #4a5568;
+  }
+
+  html.dark .custom-sticker-dropdown-trigger {
+    background: #374151;
+    border-color: #4b5563;
+    color: #ffffff;
+  }
+
+  html.dark .custom-sticker-dropdown-list,
+  html.dark .custom-sticker-dropdown-options {
+    background: #374151;
+    border-color: #4b5563;
+    scrollbar-color: #4a5568 transparent;
+  }
+
+  html.dark .custom-sticker-dropdown-option {
+    color: #ffffff;
+  }
+
+  html.dark .custom-sticker-dropdown-option:hover {
+    background: #4b5563;
+  }
+
+  html.dark .custom-sticker-dropdown-option.selected {
+    background: #3b82f6;
+    color: #ffffff;
+  }
+
+  html.dark .custom-sticker-dropdown-list::-webkit-scrollbar-thumb,
+  html.dark .custom-sticker-dropdown-options::-webkit-scrollbar-thumb {
+    background-color: #4a5568;
+  }
+
+  html.dark .custom-sticker-dropdown-list::-webkit-scrollbar-thumb:hover,
+  html.dark .custom-sticker-dropdown-options::-webkit-scrollbar-thumb:hover {
+    background-color: #718096;
+  }
+
+  html.dark .custom-sticker-dropdown-list::-webkit-scrollbar-thumb:active,
+  html.dark .custom-sticker-dropdown-options::-webkit-scrollbar-thumb:active {
+    background-color: #a0aec0;
+  }
+  /* ===== End Custom Sticker Material Dropdown ===== */
+
+.sticker-editor-wrapper input[type="number"]:focus,
+.sticker-editor-wrapper select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 0.35rem rgba(0, 123, 255, 0.18);
+}
+
+.sticker-editor-wrapper .row {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 25px;
+  align-items: flex-end;
+}
+
+.sticker-editor-wrapper .row>div {
+  flex: 1;
+}
+
+.sticker-editor-wrapper .result {
+  padding: 30px;
+  background: #eaf4ff;
+  border: 1px solid #a3c9f0;
+  border-radius: 12px;
+  margin-top: 40px;
+  font-size: 1.2em;
+  color: #004085;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.sticker-editor-wrapper .result strong {
+  color: #0056b3;
+  font-weight: 700;
+}
+
+.sticker-editor-wrapper canvas {
+  display: block;
+  border: 1px solid #e2e8f0;
+  margin-top: 10px;
+  background: #fdfdfd;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  max-width: 100%;
+  height: auto;
+}
+
+.sticker-editor-wrapper .info-text {
+  font-size: 0.98em;
+  color: #71717a;
+  display: block;
+  font-style: italic;
+}
+
+.sticker-editor-wrapper .general-info-text {
+  margin-top: -18px;
+  margin-bottom: 30px;
+}
+
+.sticker-editor-wrapper .spacing-input-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.sticker-editor-wrapper .spacing-input-group input,
+.sticker-editor-wrapper .spacing-input-group select {
+  margin-bottom: 0;
+}
+
+.sticker-editor-wrapper .spacing-input-group input {
+  flex-grow: 1;
+}
+
+.sticker-editor-wrapper .spacing-unit-select {
+  width: auto;
+  flex-shrink: 0;
+}
+
+.sticker-editor-wrapper .artwork-control-grid {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 15px;
+  align-items: flex-start;
+}
+
+.sticker-editor-wrapper .artwork-presets-column {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sticker-editor-wrapper .artwork-upload-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.sticker-editor-wrapper .artwork-upload-column label {
+  margin-bottom: 0;
+}
+
+.sticker-editor-wrapper .preset-buttons-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.sticker-editor-wrapper .preset-button {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 4px;
+  /* Adjust horizontal padding */
+  background-color: #eef2f6;
+  border: 1px solid #d4dbe4;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e3a8a;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.sticker-editor-wrapper .preset-button:hover {
+  background-color: #dbe4ee;
+  border-color: #a7b7c2;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  color: #0056b3;
+}
+
+.sticker-editor-wrapper .preset-button:active,
+.sticker-editor-wrapper .preset-button.active {
+  background-color: #007bff;
+  color: #ffffff;
+  border-color: #007bff;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.25);
+}
+
+.sticker-editor-wrapper .row+.info-text {
+  margin-top: -18px;
+  margin-bottom: 30px;
+}
+
+.sticker-editor-wrapper .file-upload-group {
+  margin-bottom: 0;
+}
+
+.sticker-editor-wrapper .file-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0;
+}
+
+.sticker-editor-wrapper .custom-file-upload-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* padding: 7px 18px;  Removed to use h-11 */
+  padding: 0 16px;
+  background-color: #007bff;
+  color: #ffffff;
+  border: 1px solid #007bff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.98em;
+  font-weight: 600;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+}
+
+.sticker-editor-wrapper .custom-file-upload-button:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.25);
+}
+
+.sticker-editor-wrapper .file-name-display {
+  font-size: 0.98em;
+  color: #475569;
+  flex-grow: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex-basis: 0;
+}
+
+.sticker-editor-wrapper .clear-image-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.sticker-editor-wrapper .clear-image-controls .btn-control {
+  /* padding: 11px 18px;  Removed to rely on h-11 */
+  padding: 0 16px;
+  /* font-size: 0.9em;  Removed to match preset button */
+  width: auto;
+  background-color: #eef2f6;
+  border: 1px solid #d4dbe4;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 200;
+  color: #1e3a8a;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.sticker-editor-wrapper .clear-image-controls .info-text {
+  font-size: 0.85em;
+  margin-top: 0;
+  margin-bottom: 0;
+  flex-grow: 1;
+}
+
+.sticker-editor-wrapper #invoiceText:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.sticker-editor-wrapper .btn {
+  /* padding: 10px 20px;  Removed to use default */
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  /* font-size: 1em;  Use default */
+  /* font-weight: 500;  Use default */
+  /* transition: background-color 0.2s ease, transform 0.1s ease;  Use default */
+}
+}
+
+.sticker-editor-wrapper .btn-secondary:hover {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+}
+
+.sticker-editor-wrapper .btn-control {
+  /* padding: 11px 18px;  Removed to use h-11 */
+  padding: 0 16px;
+  /* font-size: 0.9em;  Removed to match preset button */
+  width: auto;
+  background-color: #eef2f6;
+  border: 1px solid #d4dbe4;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #1e3a8a;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sticker-editor-wrapper .btn-control:hover {
+  background-color: #dbe4ee;
+  border-color: #a7b7c2;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  color: #0056b3;
+}
+
+.sticker-editor-wrapper .active-control {
+  background-color: #007bff !important;
+  color: #ffffff !important;
+  border-color: #007bff !important;
+}
+
+.active-control {
+  background-color: #007bff !important;
+  color: #ffffff !important;
+  border-color: #007bff !important;
+}
+
+.sticker-editor-wrapper .btn.active-control {
+  background-color: #007bff !important;
+  color: #ffffff !important;
+  border-color: #007bff !important;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.25) !important;
+}
+
+.btn.active-control {
+  background-color: #007bff !important;
+  color: #ffffff !important;
+  border-color: #007bff !important;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.25) !important;
+}
+
+.sticker-editor-wrapper .btn.active-control.agent-active,
+.btn.active-control.agent-active {
+  background-color: var(--success-color) !important;
+  color: #fff !important;
+  border-color: var(--success-color) !important;
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2) !important;
+}
+
+.sticker-editor-wrapper .active-control.agent-active {
+  background-color: var(--success-color) !important;
+  color: #fff !important;
+  border-color: var(--success-color) !important;
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2) !important;
+}
+
+.sticker-editor-wrapper .canvas-summary-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.99em;
+  font-weight: 600;
+  color: #000000 !important;
+  text-align: center;
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: auto;
+  max-width: 80%;
+  pointer-events: none;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+html.dark .sticker-editor-wrapper .canvas-summary-text {
+  color: #000000 !important;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8) !important;
+}
+
+.sticker-editor-wrapper .input-with-stepper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.sticker-editor-wrapper .stepper-button {
+  background-color: #eef2f6;
+  border: none;
+  padding: 14px 10px;
+  cursor: pointer;
+  font-size: 1em;
+  color: #475569;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sticker-editor-wrapper .stepper-button:hover {
+  background-color: #e2e8f0;
+  color: #0056b3;
+}
+
+.sticker-editor-wrapper .stepper-button:first-child {
+  border-right: 1px solid #cbd5e1;
+}
+
+.sticker-editor-wrapper .stepper-button:last-child {
+  border-left: 1px solid #cbd5e1;
+}
+
+.sticker-editor-wrapper .artwork-unit-controls {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.sticker-editor-wrapper .artwork-unit-controls select {
+  flex-grow: 1;
+}
+
+.sticker-editor-wrapper .artwork-unit-controls button {
+  /* padding-left: 12px; Removed to use h-11 */
+  /* padding-right: 12px; Removed to use h-11 */
+  padding: 0 12px;
+  font-size: 1.2em;
+}
+
+#copyStickerBtn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: auto;
+  padding: 6px 12px;
+  font-size: 14px;
+  margin-top: 0;
+}
+
+/* --- Settings Page --- */
+.settings-panel {
+  margin: 0;
+  background: var(--content-bg);
+  padding: 24px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+/* --- General Calculator Components (Lanyard, ID, etc) --- */
+.calculator-container {
+  background: var(--content-bg);
+  border-radius: var(--border-radius);
+  padding: 32px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  max-width: 800px;
+  width: 100%;
+  margin: auto;
+}
+
+.calculator-container h2 {
+  margin-top: 0;
+  color: var(--text-primary);
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 24px;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.option-box {
+  background: var(--light-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 16px;
+}
+
+.option-box label {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+/* --- Quote Pad (Sidebar) --- */
+#quotePadTrigger {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 60px;
+  /* Increased width for better hover area */
+  height: 100%;
+  z-index: 98;
+  /* Sits below the button but above other page content */
+}
+
+#quotePadToggleBtn {
+  position: absolute;
+  top: 6%;
+  right: 33px;
+  /* Positions the button inside the trigger area */
+  background-color: var(--primary-color);
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 200;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  /* Rotate the button and hide it by default by pushing it off-screen */
+  transform-origin: top right;
+  transform: translateY(-50%) rotate(270deg) translateX(0%);
+  /* Starts fully hidden */
+  transition: transform 0.25s ease-in-out;
+  /* Animate the slide effect */
+}
+
+#quotePadTrigger:hover #quotePadToggleBtn {
+  transform: translateY(-50%) rotate(270deg) translateX(0%);
+}
+
+.quote-pad-slider {
+  position: fixed;
+  top: 0;
+  right: -420px;
+  /* Start off-screen - increased width */
+  width: 420px;
+  /* Increased from 350px to 450px */
+  height: 100%;
+  background-color: var(--content-bg);
+  border-left: 1px solid var(--border-color);
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  transition: right 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.quote-pad-slider.visible {
+  right: 0;
+  /* Slide into view */
+}
+
+.quote-pad-top-actions {
+  display: flex;
+  /* Keeps buttons side-by-side */
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--secondary-color);
+  /* Container is button color */
+}
+
+.quote-pad-top-actions button {
+  flex-grow: 1;
+  /* Makes them share the space */
+  margin-top: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* NEW: Taller padding and larger font */
+  padding: 0.9rem 1rem;
+  /* 0.9rem top/bottom, 1rem left/right */
+  font-size: 1rem;
+  /* Increases text and icon size */
+  border-radius: 0;
+  /* NEW: Removes all rounding */
+  background-color: transparent;
+  /* NEW: Makes button background see-through */
+  transition: background-color 0.2s ease;
+}
+
+.quote-pad-top-actions button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  /* Darken on hover */
+}
+
+.quote-pad-top-actions button:first-child {
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.quote-pad-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.quote-pad-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.quote-pad-header .close-btn {
+  background: none;
+  border: none;
+  font-size: 1.75rem;
+  cursor: pointer;
+  line-height: 1;
+  color: var(--text-secondary);
+}
+
+.quote-pad-items {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Prevent horizontal scroll during drag */
+  padding: 1rem;
+  -webkit-overflow-scrolling: touch;
+  /* Smooth scrolling on iOS */
+}
+
+.quote-pad-item {
+  background-color: var(--light-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 0.75rem 0.75rem 0.75rem 3.5rem;
+  /* More left padding: top right bottom LEFT */
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  position: relative;
+  cursor: move;
+  /* Show it's draggable */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 80px;
+  /* Ensure minimum height for better layout */
+}
+
+.quote-pad-item:active {
+  cursor: grabbing;
+}
+
+.quote-pad-item.sortable-ghost {
+  opacity: 0.4;
+  background-color: var(--primary-color);
+}
+
+.quote-pad-item.sortable-drag {
+  opacity: 0.8;
+  transform: rotate(2deg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.quote-pad-item:not(.sortable-drag) {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.drag-handle {
+  position: absolute;
+  left: 0.25rem;
+  top: 0;
+  bottom: 0;
+  width: 2.5rem;
+  /* Fixed width for handle area */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  color: var(--text-secondary);
+  font-size: 1.3rem;
+  user-select: none;
+  touch-action: none;
+  z-index: 5;
+  background: linear-gradient(90deg, transparent, rgba(128, 128, 128, 0.05));
+  /* Subtle background */
+  border-right: 1px solid var(--border-color);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-handle:hover {
+  color: var(--primary-color);
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1));
+}
+
+.quote-item-details {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  padding-right: 0.5rem;
+  /* Prevent touching the right edge */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.quote-pad-item input[type="number"],
+.quote-pad-item input[type="text"],
+.quote-pad-item textarea {
+  width: 100%;
+  font-size: 0.9rem;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+  box-sizing: border-box;
+}
+
+.quote-pad-item textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+.quote-pad-item input[id^="price-"],
+.quote-pad-item input[id^="qty-"] {
+  max-width: 100px;
+}
+
+.quote-pad-item strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--text-primary);
+  padding-right: 35px;
+  /* Make room for remove button */
+}
+
+.quote-pad-item>div:not(.drag-handle):not(.remove-item-btn):not(.item-action-btns) {
+  position: relative;
+  z-index: 1;
+}
+
+.quote-pad-item .details {
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.quote-pad-item .price {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--primary-color);
+  text-align: right;
+  margin-top: 0.5rem;
+}
+
+.quote-pad-item .item-action-btns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.quote-pad-item .item-action-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.quote-pad-item .item-action-btn:hover {
+  background-color: var(--light-bg);
+  color: var(--text-primary);
+}
+
+.quote-pad-item .item-action-btn.btn-danger:hover {
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+  color: white;
+}
+
+.quote-pad-footer {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--content-bg);
+}
+
+.quote-pad-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.quote-pad-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.quote-pad-actions button {
+  flex-grow: 1;
+  margin-top: 0 !important;
+  white-space: nowrap;
+}
+
+#addToPadBtn {
+  background: var(--success-color);
+  color: white;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+#addToPadBtn:hover {
+  background: #218838;
+}
+
+.quote-item-full-details {
+  font-family: 'Poppins', sans-serif;
+  /* Ensures it uses the same font */
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  /* Helps with long lines */
+}
+
+.quote-pad-view-toggle {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  width: 30px;
+  height: 30px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quote-pad-view-toggle:hover {
+  background-color: var(--light-bg);
+  color: var(--text-primary);
+}
+
+.quote-pad-view-toggle.active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+/* --- Load Quote Page --- */
+.load-quote-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.load-quote-card {
+  background: var(--content-bg);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.load-quote-card h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: 16px 16px 8px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.load-quote-card p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  padding: 8px 16px 16px 16px;
+  flex-grow: 1;
+}
+
+.load-quote-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* Two columns */
+  gap: 8px;
+  /* Space between buttons */
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+  /* Add some space above the buttons */
+  margin-top: 12px;
+  /* Add space above the border */
+}
+
+.load-quote-actions button {
+  flex-grow: 0;
+  /* Disable flex-grow */
+  margin-top: 0 !important;
+  border-radius: var(--border-radius) !important;
+  /* Re-apply border radius */
+  font-weight: 600;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  background: none;
+  transition: background-color 0.2s ease;
+  text-align: center;
+}
+
+.load-quote-actions .btn-load {
+  color: var(--primary-color);
+  background-color: rgba(59, 130, 246, 0.1);
+  /* Light blue bg */
+  border: 1px solid var(--primary-color);
+}
+
+.load-quote-actions .btn-load:hover {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+.load-quote-actions .btn-preview {
+  color: var(--accent-color);
+  background-color: rgba(13, 148, 136, 0.1);
+  /* Light teal bg */
+  border: 1px solid var(--accent-color);
+}
+
+.load-quote-actions .btn-preview:hover {
+  background-color: rgba(13, 148, 136, 0.2);
+}
+
+.load-quote-actions .btn-edit {
+  color: var(--secondary-color);
+  background-color: rgba(108, 117, 125, 0.1);
+  /* Light gray bg */
+  border: 1px solid var(--secondary-color);
+}
+
+.load-quote-actions .btn-edit:hover {
+  background-color: rgba(108, 117, 125, 0.2);
+}
+
+.load-quote-actions .btn-delete {
+  color: var(--danger-color);
+  background-color: rgba(239, 68, 68, 0.1);
+  /* Light red bg */
+  border: 1px solid var(--danger-color);
+}
+
+.load-quote-actions .btn-delete:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+/* --- Quote Preview Modal --- */
+#quotePreviewModal.flex {
+  display: flex;
+}
+
+.preview-item {
+  background-color: var(--light-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.preview-item-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  display: block;
+}
+
+.preview-item-details {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 4px;
+  white-space: pre-wrap;
+  /* Keeps formatting */
+}
+
+.preview-item-price {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--primary-color);
+  text-align: right;
+  margin-top: 8px;
+}
+
+/* =================================== */
+/* == 7. Utility & FX Classes == */
+/* =================================== */
+/* --- Aurora Text FX --- */
+.aurora-text {
+  background: linear-gradient(90deg,
+      #2176ff 20%,
+      #7d21ff 50%,
+      #ff218c 80%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: aurora-glow 6s linear infinite;
+}
+
+/* --- Custom Title Colors --- */
+.sublimation-title {
+  color: #ea580c !important;
+  /* Orange-600 */
+}
+
+.business-card-title {
+  color: #16a34a !important;
+  /* Green-600 */
+}
+
+.id-card-title {
+  color: #4f46e5 !important;
+  /* Indigo-600 */
+}
+
+.lanyard-title {
+  color: #c026d3 !important;
+  /* Fuchsia-600 */
+}
+
+.invitation-card-title {
+  color: #0d9488 !important;
+  /* Teal-600 */
+}
+
+.acrylic-title {
+  color: #2563eb !important;
+  /* Blue-600 */
+}
+
+/* --- Kiosk Mode (Simplified) --- */
+.kiosk-mode-active .global-toggle-container,
+.kiosk-mode-active .agent-price-col,
+.kiosk-mode-active .action-buttons,
+.kiosk-mode-active #addMaterialForm,
+.kiosk-mode-active #acrylicSettingsBtn,
+/* Hide Admin Actions */
+.kiosk-mode-active button[onclick*="remove"],
+.kiosk-mode-active button[onclick*="delete"],
+.kiosk-mode-active button[onclick*="import"],
+.kiosk-mode-active button[onclick*="export"],
+.kiosk-mode-active .settings-panel .btn-secondary,
+.kiosk-mode-active .settings-panel .btn-danger {
+  display: none !important;
+}
+
+/* Hide "Save" buttons but KEEP "Save General Settings" */
+.kiosk-mode-active button[onclick*="save"]:not(#applyGlobalPrices) {
+  display: none !important;
+}
+
+/* Hide "Add" buttons (Admin) but KEEP "Add to Pad" (User) */
+/* Note: We still need this exception because Lanyard/ID Card/etc still use onclick="add..." */
+.kiosk-mode-active button[onclick*="add"]:not([id*="ToPad"]):not([onclick*="addOpenItem"]) {
+  display: none !important;
+}
+
+/* Hide "Reset" but KEEP "Reset Spacing" and "Reset Artwork" */
+.kiosk-mode-active button[onclick*="reset"]:not([onclick*="Spacing"]):not([onclick*="ArtworkFit"]) {
+  display: none !important;
+}
+
+/* FORCE SHOW: Save General Settings Button (Vital for turning Kiosk Mode OFF) */
+.kiosk-mode-active #applyGlobalPrices {
+  display: inline-block !important;
+}
+
+/*
+.kiosk-mode-active #drawer-navigation a[onclick*="settings"],
+.kiosk-mode-active #drawer-navigation a[onclick*="loadQuote"],
+.kiosk-mode-active #quotePadTrigger,
+.kiosk-mode-active #acrylicSettingsBtn,
+.kiosk-mode-active .quote-pad-top-actions {
+  display: none !important;
+}
+*/
+/* =================================== */
+/* == 8. Dark Mode Overrides == */
+/* =================================== */
+/* Dark Mode variables - This applies the dark theme globally */
+html.dark {
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --secondary-color: #4b5563;
+  --accent-color: #2dd4bf;
+  --success-color: #22c55e;
+  --danger-color: #ef4444;
+  --light-bg: #111827;
+  --content-bg: #1f2937;
+  --border-color: #4b5563;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Light Islands (forced light mode for specific components) --- */
+html.dark .invoice,
+html.dark .calculator-container,
+html.dark #currencyModal>div {
+  color: #212529;
+  /* Re-apply the primary text color to all children */
+  --primary-color: #007BFF;
+  --primary-hover: #0056b3;
+  --secondary-color: #6c757d;
+  --accent-color: #17a2b8;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --light-bg: #f8f9fa;
+  --content-bg: #ffffff;
+  --border-color: #dee2e6;
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Additional fix for inputs and textareas inside the light islands */
+html.dark .material-card input,
+html.dark .calculator-panel input,
+html.dark .invoice input,
+html.dark .calculator-container input,
+html.dark .sticker-editor-wrapper .calculator-panel input,
+html.dark #currencyModal>div input,
+html.dark .material-card select,
+html.dark .calculator-panel select,
+html.dark .invoice select,
+html.dark .calculator-container select,
+html.dark .sticker-editor-wrapper .calculator-panel select,
+html.dark #currencyModal>div select,
+html.dark .material-card textarea,
+html.dark .calculator-panel textarea,
+html.dark .invoice textarea,
+html.dark .calculator-container textarea,
+html.dark .sticker-editor-wrapper .container textarea,
+html.dark #currencyModal>div textarea {
+  background-color: #ffffff;
+  color: #212529;
+  border-color: #dee2e6;
+}
+
+/* --- ADD: Specific Dark Mode Styles for Sticker Editor --- */
+html.dark .sticker-editor-wrapper {
+  background-color: var(--light-bg);
+  color: #ffffff;
+  /* Force generic text to white */
+}
+
+html.dark .sticker-editor-wrapper .calculator-panel {
+  background-color: var(--content-bg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  color: #ffffff;
+  /* Force container text to white */
+}
+
+/* FIX: Make Labels and Helper Text Bright White in Dark Mode */
+html.dark .sticker-editor-wrapper label,
+html.dark .sticker-editor-wrapper .info-text {
+  color: #e5e7eb !important;
+  /* High contrast light grey/white */
+}
+
+html.dark .sticker-editor-wrapper .canvas-summary-text {
+  color: #000000 !important;
+  /* Force black in dark mode to match light mode */
+}
+
+html.dark .sticker-editor-wrapper h2 {
+  color: #f43f5e;
+  /* Rose color for title in dark mode */
+}
+
+/* Force Canvas to remain White in Dark Mode */
+html.dark .sticker-editor-wrapper canvas {
+  background-color: #ffffff !important;
+  filter: none;
+}
+
+/* Fix Inputs in Sticker Editor for Dark Mode */
+html.dark .sticker-editor-wrapper input,
+html.dark .sticker-editor-wrapper select,
+html.dark .sticker-editor-wrapper textarea {
+  background-color: #374151 !important;
+  /* Force Dark Grey Background */
+  border-color: #4b5563 !important;
+  /* Dark Grey Border */
+  color: #ffffff !important;
+  /* White Text */
+}
+
+/* Optional: Fix Dropdown Options text color (for some browsers) */
+html.dark .sticker-editor-wrapper select option {
+  background-color: #374151;
+  color: #ffffff;
+}
+}
+
+/* Hide scrollbars on comparison modal scroll containers */
+.compare-scroll {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  overflow-y: auto;
+}
+
+.compare-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+html.dark .sticker-editor-wrapper .stepper-button {
+  background-color: #4b5563;
+  color: #ffffff;
+  border-color: #374151;
+}
+
+html.dark .sticker-editor-wrapper .btn-control {
+  background-color: #374151;
+  color: #ffffff;
+  border-color: #4b5563;
+}
+
+html.dark .sticker-editor-wrapper .btn-control:hover {
+  background-color: #4b5563;
+}
+
+html.dark .sticker-editor-wrapper .preset-button {
+  background-color: #374151;
+  color: #ffffff;
+  border-color: #4b5563;
+}
+
+html.dark .sticker-editor-wrapper .preset-button.active {
+  background: var(--primary-color);
+  color: white;
+}
+
+html.dark .sticker-editor-wrapper .result {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #93c5fd;
+}
+
+html.dark #stickerInvoiceText {
+  background-color: #374151 !important;
+  color: #ffffff !important;
+  border-color: #4b5563 !important;
+}
+
+/* --- Dark Mode: Settings Page --- */
+html.dark .settings-panel {
+  background-color: var(--content-bg);
+  border-color: var(--border-color);
+}
+
+html.dark .settings-panel h4,
+html.dark .settings-panel label {
+  color: var(--text-primary);
+}
+
+html.dark .settings-panel p {
+  color: var(--text-secondary);
+}
+
+html.dark .settings-panel input[type="number"],
+html.dark .settings-panel input[type="text"],
+html.dark .settings-panel select,
+html.dark .settings-panel textarea {
+  background-color: #374151;
+  /* Tailwind gray-700 */
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+html.dark .settings-panel .modern-checkbox-grid .checkbox-group {
+  background-color: #374151;
+  border-color: var(--border-color);
+}
+
+html.dark .settings-panel .modern-checkbox-grid label::before {
+  background-color: #4b5563;
+  /* A slightly lighter gray for the box */
+  border-color: var(--border-color);
+}
+
+html.dark .settings-panel .modern-checkbox-grid input[type="checkbox"]:checked+label::before {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+html.dark .settings-panel .btn-secondary {
+  background-color: #4b5563;
+  /* Tailwind gray-600 */
+}
+
+html.dark #settingsTab button {
+  transition: all 0.3s ease;
+}
+
+html.dark #settingsTab button.border-blue-600 {
+  background-image: radial-gradient(ellipse at top, rgba(99, 102, 241, 0.2), transparent 80%);
+  border-color: #60a5fa;
+  /* A brighter blue for the border */
+  box-shadow: 0 4px 20px -5px rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+  /* Optional: lift the tab slightly */
+}
+
+html.dark .settings-panel .settings-table th {
+  color: var(--text-primary);
+  /* Use the theme's primary text color for dark mode */
+}
+
+/* --- Dark Mode: Printing Calculator --- */
+html.dark .settings-panel #copyableInvoice {
+  background-color: #374151;
+  /* Match other dark inputs */
+  color: var(--text-primary);
+  /* Match other dark inputs */
+  border-color: var(--border-color);
+}
+
+html.dark .material-grid-container {
+  background-color: var(--light-bg);
+  /* Use the darkest theme color */
+  border-color: var(--border-color);
+}
+
+html.dark .material-card .material-info strong,
+html.dark .material-card .agent-toggle {
+  /* Ensure text inside the card uses dark theme text colors */
+  color: var(--text-primary);
+}
+
+html.dark .material-card .material-info span {
+  /* Keep the price in the theme's primary accent color */
+  color: var(--primary-color);
+}
+
+html.dark .material-card.agent-active .material-info span {
+  color: var(--success-color);
+}
+
+html.dark .material-card .agent-toggle {
+  background: #374151;
+  /* A neutral dark gray */
+  color: var(--text-secondary);
+  border-top-color: var(--border-color);
+}
+
+html.dark .material-card .agent-toggle:hover {
+  background: #4b5563;
+  /* Lighter gray on hover */
+}
+
+html.dark .material-card .agent-toggle.agent-active {
+  background: var(--success-color);
+  color: #ffffff;
+  /* White text on green background */
+}
+
+html.dark .material-card .agent-toggle.agent-active:hover {
+  background: #16a34a;
+  /* A slightly darker green for hover */
+}
+
+html.dark .material-card.active.agent-active {
+  border-color: var(--success-color);
+  box-shadow: inset 0 0 0 1px var(--success-color), 0 0 12px rgba(34, 197, 94, 0.5);
+  background-image: radial-gradient(ellipse at top right, rgba(34, 197, 94, 0.1) 0%, transparent 50%);
+}
+
+.material-card.active {
+  border-color: var(--primary-color);
+  box-shadow: inset 0 0 0 1px var(--primary-color), 0 0 12px rgba(0, 123, 255, 0.3);
+  background-image: radial-gradient(ellipse at top right, rgba(0, 123, 255, 0.1) 0%, transparent 50%);
+}
+
+html.dark .calculator-panel {
+  background-color: var(--content-bg);
+  border-color: var(--border-color);
+}
+
+html.dark .calculator-panel label,
+html.dark .calculator-panel .checkbox-group label {
+  color: var(--text-secondary);
+}
+
+html.dark .calculator-panel input[type="number"],
+html.dark .calculator-panel input[type="text"],
+html.dark .calculator-panel select,
+html.dark .calculator-panel .invoice-copy-area textarea {
+  background-color: #374151;
+  /* Tailwind gray-700 */
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+html.dark .calculator-panel input[type="number"]:focus,
+html.dark .calculator-panel input[type="text"]:focus,
+html.dark .calculator-panel select:focus,
+html.dark .calculator-panel .invoice-copy-area textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+html.dark .calculator-panel .size-btn,
+html.dark .settings-panel .size-btn {
+  background-color: #374151;
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+html.dark .calculator-panel .size-btn:hover,
+html.dark .settings-panel .size-btn:hover {
+  background-color: #4b5563;
+  /* Lighter gray */
+}
+
+html.dark .calculator-panel .size-btn.active,
+html.dark .settings-panel .size-btn.active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #ffffff;
+}
+
+html.dark .calculator-panel .btn-secondary {
+  background-color: #374151;
+  color: var(--text-primary);
+}
+
+html.dark .calculator-panel .checkbox-group label::before {
+  background-color: #374151;
+  border-color: var(--border-color);
+}
+
+html.dark .calculator-panel input[type="checkbox"]:checked+label::before {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+html.dark .calculator-panel .result {
+  background-color: var(--light-bg);
+  /* Use the darkest theme color */
+  color: var(--text-secondary);
+}
+
+html.dark .calculator-panel .result strong {
+  color: var(--primary-color);
+  font-size: 22px;
+}
+
+html.dark .calculator-panel .modern-checkbox-grid .checkbox-group {
+  background-color: #374151;
+  /* Match the input field background */
+  border-color: var(--border-color);
+}
+
+html.dark .calculator-panel .modern-checkbox-grid input[type="checkbox"] {
+  accent-color: var(--primary-color);
+  /* Sets the color of the checkmark */
+}
+
+/* --- Dark Mode: Global Agent Toggle --- */
+html.dark .global-toggle-container .size-btn.active-agent {
+  background: var(--success-color);
+  border-color: var(--success-color);
+  box-shadow: 0 4px 8px rgba(34, 197, 94, 0.3);
+}
+
+/* ==========================================
+   ASSET LIBRARY PAGE
+   ========================================== */
+
+/* Page Container */
+.asset-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+}
+
+/* Header */
+.asset-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  border: 1px solid #bbf7d0;
+  border-radius: 16px;
+}
+html.dark .asset-page-header {
+  background: linear-gradient(135deg, #064e3b33, #065f4633);
+  border-color: #065f46;
+}
+
+.asset-page-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.asset-page-title i {
+  color: #14b8a6;
+}
+.asset-page-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Stats */
+.asset-page-stats {
+  display: flex;
+  gap: 16px;
+}
+.asset-stat {
+  text-align: center;
+  padding: 10px 20px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  min-width: 90px;
+}
+html.dark .asset-stat {
+  background: #1f2937;
+  border-color: #374151;
+}
+.asset-stat-number {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  color: #14b8a6;
+}
+.asset-stat-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* Search Bar */
+.asset-search-bar {
+  position: relative;
+  margin-bottom: 24px;
+}
+.asset-search-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+.asset-search-input:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+}
+html.dark .asset-search-input {
+  background: #1f2937;
+  border-color: #374151;
+  color: #f3f4f6;
+}
+html.dark .asset-search-input:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.25);
+}
+
+/* Category Sections */
+.asset-category-section {
+  margin-bottom: 28px;
+}
+.asset-category-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e5e7eb;
+}
+html.dark .asset-category-header {
+  border-bottom-color: #374151;
+}
+.asset-category-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.asset-category-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+}
+.asset-category-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: #f3f4f6;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+html.dark .asset-category-count {
+  background: #374151;
+}
+
+/* Card Grid */
+.asset-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+}
+
+/* Individual Card */
+.asset-card {
+  border: 1px solid;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+  cursor: default;
+}
+.asset-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+html.dark .asset-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Card Image */
+.asset-card-img-wrap {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+html.dark .asset-card-img-wrap {
+  background: #111827;
+  border-color: #374151;
+}
+.asset-card-img {
+  max-width: 84px;
+  max-height: 84px;
+  object-fit: contain;
+}
+.asset-img-error {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+/* Card Labels */
+.asset-card-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .asset-page-header {
+    flex-direction: column;
+    padding: 16px;
+  }
+  .asset-page-stats {
+    width: 100%;
+    justify-content: center;
+  }
+  .asset-card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+  }
+  .asset-card-img-wrap {
+    width: 80px;
+    height: 80px;
+  }
+  .asset-card-img {
+    max-width: 64px;
+    max-height: 64px;
+  }
+}
+
+html.dark .global-toggle-container .size-btn.active-agent.active {
+  background: var(--success-color);
+  border-color: var(--success-color);
+}
+
+/* --- Dark Mode: Navigation (Drawer & Dock) --- */
+html.dark #drawer-navigation {
+  background-color: #1f2937;
+  /* This is Tailwind's gray-800 */
+}
+
+html.dark div[data-drawer-backdrop] {
+  background-color: rgba(17, 24, 39, 0.8);
+  /* A near-black at 80% opacity */
+}
+
+html.dark #dockContainer {
+  background-color: rgba(40, 40, 40, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+html.dark .dock-item {
+  /* Dark mode glass effect for each icon circle */
+  background-color: rgba(55, 65, 81, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+
+html.dark a .dock-item i,
+html.dark .dock-item svg {
+  color: #d1d5db;
+}
+
+/* --- Dark Mode: Addon Cards --- */
+html.dark .addon-card-label input[type="checkbox"]:checked+.addon-card,
+html.dark .addon-card-label input[type="radio"]:checked+.addon-card {
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+html.dark .addon-card-label input[type="checkbox"]:checked+.addon-card .addon-card-name-box,
+html.dark .addon-card-label input[type="checkbox"]:checked+.addon-card .addon-card-price-box,
+html.dark .addon-card-label input[type="radio"]:checked+.addon-card .addon-card-name-box,
+html.dark .addon-card-label input[type="radio"]:checked+.addon-card .addon-card-price-box {
+  background-color: var(--primary-color);
+  /* This line was changed */
+}
+
+/* --- Dark Mode: Modals (Acrylic & Quote) --- */
+html.dark #acrylicSettingsModal>div {
+  background-color: var(--content-bg);
+  color: var(--text-primary);
+}
+
+html.dark #acrylicSettingsModal .acrylic-settings-tab {
+  color: var(--text-secondary);
+  border-bottom-color: var(--border-color);
+}
+
+html.dark #acrylicSettingsModal .acrylic-settings-tab.border-indigo-500 {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+html.dark #acrylicSettingsModal h2,
+html.dark #acrylicSettingsModal h3 {
+  color: var(--text-primary);
+}
+
+html.dark #acrylicSettingsModal p {
+  color: var(--text-secondary);
+}
+
+html.dark #acrylicSettingsModal .settings-table {
+  background-color: var(--content-bg);
+}
+
+html.dark #acrylicSettingsModal .settings-table th {
+  background-color: var(--light-bg);
+  color: var(--text-primary);
+}
+
+html.dark #acrylicSettingsModal .settings-table td {
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+}
+
+/* --- Dark Mode: Quote Pad --- */
+html.dark .drag-handle {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03));
+  border-right-color: var(--border-color);
+}
+
+html.dark .drag-handle:hover {
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.15));
+}
+
+html.dark .quote-pad-item.sortable-ghost {
+  background-color: var(--primary-color);
+}
+
+html.dark .quote-pad-top-actions {
+  background-color: #4b5563;
+  /* Dark mode container is button color */
+}
+
+html.dark .quote-pad-top-actions button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  /* Lighten on hover */
+}
+
+html.dark .quote-pad-top-actions button:first-child {
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* --- Dark Mode: Load Quote Page --- */
+html.dark .load-quote-actions .btn-load:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+html.dark .load-quote-actions .btn-delete:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+html.dark .btn-secondary {
+  background: var(--secondary-color);
+  color: var(--text-primary);
+}
+
+html.dark .btn-secondary:hover {
+  background: #5a6268;
+}
+
+/* --- Dark Mode: Utility & FX --- */
+html.dark .sublimation-title {
+  color: #fb923c !important;
+  /* Orange-400 */
+}
+
+html.dark .business-card-title {
+  color: #4ade80 !important;
+  /* Green-400 */
+}
+
+html.dark .id-card-title {
+  color: #818cf8 !important;
+  /* Indigo-400 */
+}
+
+html.dark .lanyard-title {
+  color: #e879f9 !important;
+  /* Fuchsia-400 */
+}
+
+html.dark .invitation-card-title {
+  color: #2dd4bf !important;
+  /* Teal-400 */
+}
+
+html.dark .acrylic-title {
+  color: #60a5fa !important;
+  /* Blue-400 */
+}
+
+html.dark .aurora-text {
+  background: linear-gradient(90deg,
+      #3b82f6 20%,
+      #a855f7 50%,
+      #ec4899 80%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: aurora-glow 6s linear infinite;
+}
+
+/* =================================== */
+/* == 9. Media Queries (Responsive) == */
+/* =================================== */
+/* --- Homepage Grid --- */
+@media (max-width: 1024px) {
+  .home-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .home-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* --- Material Grid (Printing Calc) --- */
+@media (min-width: 1024px) {
+  .material-grid-container .material-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* --- Quote Pad --- */
+@media (max-width: 768px) {
+  .quote-pad-slider {
+    width: 100%;
+    /* Full width on mobile */
+    right: -100%;
+  }
+
+  .drag-handle {
+    font-size: 1.5rem;
+    width: 3rem;
+    left: 0;
+  }
+
+  .quote-pad-item {
+    padding: 0.75rem 0.75rem 0.75rem 3.75rem;
+    /* Even more left padding on mobile */
+    min-height: 100px;
+  }
+
+  .quote-pad-item .remove-item-btn {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 16px;
+  }
+}
+
+/* =================================== */
+/* == 10. Stamp Page Styles == */
+/* =================================== */
+/* --- Stamp Image Responsive Styles --- */
+.stamp-product-img {
+  width: 100%;
+  /* Default: Full width */
+  height: auto;
+  /* Auto height based on width */
+  aspect-ratio: 1 / 1;
+  /* Keep it square */
+  object-fit: contain;
+  /* Ensure image doesn't stretch */
+  display: block;
+  margin: 0 auto;
+  /* Center the image */
+}
+
+/* Desktop Override (Large Screens) */
+@media (min-width: 1024px) {
+  .stamp-product-img {
+    /* CHANGED: Increased from 220px to 380px */
+    width: 100%;
+    max-width: 380px;
+    /* Remove fixed height so it scales with width */
+  }
+}
+
+/* =================================== */
+/* == 11. Light Mode Modal Styles == */
+/* =================================== */
+/* Light mode styling for Save Confirmation Modal */
+html:not(.dark) #saveConfirmationModal {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+html:not(.dark) #saveConfirmationModal .bg-\[\#2a2e39\] {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+}
+
+html:not(.dark) #saveConfirmationModal .text-white {
+  color: #000000 !important;
+}
+
+html:not(.dark) #saveConfirmationModal .text-gray-400 {
+  color: #6b7280 !important;
+}
+
+html:not(.dark) #saveConfirmationModal .text-\[\#22c55e\] {
+  color: #16a34a !important;
+}
+
+html:not(.dark) #saveConfirmationModal .bg-\[\#4b5563\] {
+  background-color: #e5e7eb !important;
+  color: #000000 !important;
+}
+
+html:not(.dark) #saveConfirmationModal .bg-\[\#4b5563\]:hover {
+  background-color: #d1d5db !important;
+}
+
+html:not(.dark) #saveConfirmationModal .bg-\[\#22c55e\] {
+  background-color: #22c55e !important;
+  color: #ffffff !important;
+}
+
+html:not(.dark) #saveConfirmationModal .bg-\[\#22c55e\]:hover {
+  background-color: #16a34a !important;
+}
+
+/* Light mode styling for Delete Confirmation Modal */
+html:not(.dark) #deleteConfirmationModal {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+html:not(.dark) #deleteConfirmationModal .bg-\[\#2a2e39\] {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+}
+
+html:not(.dark) #deleteConfirmationModal .text-white {
+  color: #000000 !important;
+}
+
+html:not(.dark) #deleteConfirmationModal .text-gray-400 {
+  color: #6b7280 !important;
+}
+
+html:not(.dark) #deleteConfirmationModal .text-red-500 {
+  color: #dc2626 !important;
+}
+
+html:not(.dark) #deleteConfirmationModal .bg-\[\#4b5563\] {
+  background-color: #e5e7eb !important;
+  color: #000000 !important;
+}
+
+html:not(.dark) #deleteConfirmationModal .bg-\[\#4b5563\]:hover {
+  background-color: #d1d5db !important;
+}
+
+html:not(.dark) #deleteConfirmationModal .bg-red-500 {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+html:not(.dark) #deleteConfirmationModal .bg-red-500:hover {
+  background-color: #b91c1c !important;
+}
+
+/* Light mode styling for Add-on Group Modals */
+html:not(.dark) #addAddonGroupModal > div {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  color: #000000 !important;
+}
+
+html:not(.dark) #addAddonGroupModal h2 {
+  color: #1f2937 !important;
+}
+
+html:not(.dark) #addAddonGroupModal label {
+  color: #374151 !important;
+}
+
+html:not(.dark) #addAddonGroupModal input {
+  background-color: #f3f4f6 !important;
+  color: #000000 !important;
+  border-color: #d1d5db !important;
+}
+
+html:not(.dark) #addAddonGroupModal input::placeholder {
+  color: #9ca3af !important;
+}
+
+html:not(.dark) #addAddonGroupModal input:focus {
+  border-color: #3b82f6 !important;
+}
+
+html:not(.dark) #newAddonGroupNameInput {
+  background-color: #f3f4f6 !important;
+  color: #000000 !important;
+}
+
+html:not(.dark) #newAddonGroupNameInput:focus {
+  border-color: #3b82f6 !important;
+  background-color: #ffffff !important;
+}
+
+html:not(.dark) #addonNameInput_0,
+html:not(.dark) #addonNameInput_1,
+html:not(.dark) #addonNameInput_2,
+html:not(.dark) #addonNameInput_3,
+html:not(.dark) #addonNameInput_4,
+html:not(.dark) [id^="addonNameInput_"] {
+  background-color: #f3f4f6 !important;
+  color: #000000 !important;
+  border-color: #d1d5db !important;
+}
+
+html:not(.dark) [id^="addonNameInput_"]:focus {
+  background-color: #ffffff !important;
+  border-color: #3b82f6 !important;
+}
+
+html:not(.dark) #addAddonGroupModal .border-t {
+  border-color: #e5e7eb !important;
+}
+
+html:not(.dark) #addAddonGroupModal .bg-\[\#4b5563\] {
+  background-color: #e5e7eb !important;
+  color: #000000 !important;
+}
+
+html:not(.dark) #addAddonGroupModal .bg-\[\#4b5563\]:hover {
+  background-color: #d1d5db !important;
+}
+
+html:not(.dark) #addAddonGroupModal .bg-blue-500 {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+html:not(.dark) #addAddonGroupModal .bg-blue-500:hover {
+  background-color: #2563eb !important;
+}
+
+/* Light mode styling for Add Quantity Modal */
+html:not(.dark) #addQtyModal > div {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  color: #000000 !important;
+}
+
+html:not(.dark) #addQtyModal h2 {
+  color: #1f2937 !important;
+}
+
+html:not(.dark) #addQtyModal label {
+  color: #374151 !important;
+}
+
+html:not(.dark) #addQtyModal input {
+  background-color: #f3f4f6 !important;
+  color: #000000 !important;
+  border-color: #d1d5db !important;
+}
+
+html:not(.dark) #addQtyModal input::placeholder {
+  color: #9ca3af !important;
+}
+
+html:not(.dark) #addQtyModal input:focus {
+  border-color: #3b82f6 !important;
+}
+
+html:not(.dark) #addQtyModal .border-t {
+  border-color: #e5e7eb !important;
+}
+
+html:not(.dark) #addQtyModal .bg-\[\#4b5563\] {
+  background-color: #e5e7eb !important;
+  color: #000000 !important;
+}
+
+html:not(.dark) #addQtyModal .bg-\[\#4b5563\]:hover {
+  background-color: #d1d5db !important;
+}
+
+html:not(.dark) #addQtyModal .bg-blue-500 {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+html:not(.dark) #addQtyModal .bg-blue-500:hover {
+  background-color: #2563eb !important;
+}
+
+/* Center align price input boxes in settings table */
+.settings-table input[type="number"] {
+  text-align: center !important;
+}
+#stickerSpacingBtn.unselected-grey-bg, #stickerSmartFinderBtn.unselected-grey-bg { background-color: #eef2f6 !important; }
+.dark #stickerSpacingBtn.unselected-grey-bg, .dark #stickerSmartFinderBtn.unselected-grey-bg { background-color: #374151 !important; border-color: #4b5563 !important; }
+.reset-spacing-btn { background-color: #ffffff !important; font-size: 13px !important; font-weight: 500 !important; }
+.dark .reset-spacing-btn { background-color: var(--card-bg) !important; color: var(--text-color) !important; border-color: var(--border-color) !important; }
+
+html:not(.dark) .sidebar-toggle-blue {
+  background-color: #3b82f6 !important;
+  color: #fff !important;
+}
+
+html:not(.dark) .sidebar-toggle-blue:hover {
+  background-color: #2563eb !important;
+}
+
+html.dark .sidebar-toggle-blue {
+  background-color: #374151 !important;
+  color: #fff !important;
+}
+
+html.dark .sidebar-toggle-blue:hover {
+  background-color: #1e293b !important;
+}
+
+.static-shape-label {
+  font-size: 14px !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: #222;
+  text-align: center;
+  text-transform: uppercase;
+  margin: 0.5em 0;
+}
+
+html.dark .static-shape-label {
+  color: #fff;
+}
+
+
+
+
+
+
+
