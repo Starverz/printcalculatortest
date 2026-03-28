@@ -14,6 +14,148 @@ const runtimeState = {
   animationStartTime: null,
 };
 
+function calculateJointCharge(context, widthInFeet, heightInFeet) {
+  const jointLayout = getJointLayout(heightInFeet);
+
+  if (!jointLayout) {
+    return null;
+  }
+
+  const materialAreaPerJoint = jointLayout.overlapHeightFt * widthInFeet;
+  const materialCostPerJoint = materialAreaPerJoint * context.getPricePerSqFt();
+  const glueFeetPerJoint = widthInFeet + jointLayout.overlapHeightFt;
+  const glueCostPerJoint = glueFeetPerJoint * context.getGlobalGluePrice();
+  const totalMaterialCost = materialCostPerJoint * jointLayout.jointCount;
+  const totalGlueCost = glueCostPerJoint * jointLayout.jointCount;
+
+  return {
+    ...jointLayout,
+    materialAreaPerJoint,
+    materialCostPerJoint,
+    glueFeetPerJoint,
+    glueCostPerJoint,
+    totalMaterialCost,
+    totalGlueCost,
+    totalCost: totalMaterialCost + totalGlueCost,
+  };
+}
+
+function getJointLayout(heightInFeet) {
+  const printerSizeEl = document.getElementById('printerSize');
+  const printerSize = printerSizeEl ? parseFloat(printerSizeEl.value) : NaN;
+
+  if (!Number.isFinite(printerSize) || printerSize <= 0 || heightInFeet <= printerSize) {
+    return null;
+  }
+
+  const jointCount = Math.max(0, Math.ceil(heightInFeet / printerSize) - 1);
+  if (jointCount <= 0) {
+    return null;
+  }
+
+  const segments = [];
+  let remainingHeight = heightInFeet;
+
+  while (remainingHeight > 0.0001) {
+    const segmentHeight = Math.min(printerSize, remainingHeight);
+    segments.push(segmentHeight);
+    remainingHeight -= segmentHeight;
+  }
+
+  return {
+    printerSize,
+    jointCount,
+    overlapHeightFt: 1 / 12,
+    segments,
+  };
+}
+
+function formatJointMeasurement(context, valueInFeet, unit) {
+  const convertedValue = context.convertFromMm(context.convertToMm(valueInFeet, 'ft'), unit);
+  const precisionMap = { ft: 2, in: 2, cm: 2, mm: 0, m: 3 };
+  const precision = Object.prototype.hasOwnProperty.call(precisionMap, unit) ? precisionMap[unit] : 2;
+
+  return `${parseFloat(convertedValue.toFixed(precision))}${unit}`;
+}
+
+function drawJointOverlay(ctx, x, y, drawWidth, drawHeight, scale, jointLayout) {
+  if (!jointLayout || !Array.isArray(jointLayout.segments) || jointLayout.segments.length < 2) {
+    return;
+  }
+
+  const overlapDrawHeight = Math.max(2, jointLayout.overlapHeightFt * scale);
+  let accumulatedHeight = 0;
+
+  ctx.save();
+
+  jointLayout.segments.slice(0, -1).forEach((segmentHeight) => {
+    accumulatedHeight += segmentHeight;
+    const seamY = y + (accumulatedHeight * scale);
+    const topBandY = Math.max(y, seamY - overlapDrawHeight);
+    const bottomBandY = Math.min(y + drawHeight - overlapDrawHeight, seamY);
+
+    ctx.fillStyle = 'rgba(250, 204, 21, 0.60)';
+    ctx.fillRect(x, topBandY, drawWidth, overlapDrawHeight);
+    ctx.fillRect(x, bottomBandY, drawWidth, overlapDrawHeight);
+
+    ctx.strokeStyle = 'rgba(180, 83, 9, 0.95)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    ctx.moveTo(x, seamY);
+    ctx.lineTo(x + drawWidth, seamY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  ctx.restore();
+}
+
+function drawJointSegmentGuides(ctx, x, y, drawWidth, scale, jointLayout) {
+  if (!jointLayout || !Array.isArray(jointLayout.segments) || jointLayout.segments.length < 2) {
+    return;
+  }
+
+  const guideX = x + drawWidth + 24;
+  const tickSize = 8;
+  let accumulatedHeight = 0;
+
+  ctx.save();
+  ctx.strokeStyle = '#f59e0b';
+  ctx.fillStyle = '#111827';
+  ctx.lineWidth = 2;
+  ctx.font = 'bold 12px Poppins';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  jointLayout.segments.forEach((segmentHeight) => {
+    const segmentTop = y + (accumulatedHeight * scale);
+    const segmentBottom = y + ((accumulatedHeight + segmentHeight) * scale);
+    const innerTop = segmentTop + 6;
+    const innerBottom = segmentBottom - 6;
+    const centerY = (segmentTop + segmentBottom) / 2;
+
+    ctx.beginPath();
+    ctx.moveTo(guideX, innerTop);
+    ctx.lineTo(guideX, innerBottom);
+    ctx.moveTo(guideX - tickSize, innerTop);
+    ctx.lineTo(guideX, innerTop);
+    ctx.moveTo(guideX - tickSize, innerBottom);
+    ctx.lineTo(guideX, innerBottom);
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(guideX + 18, centerY);
+    ctx.rotate(Math.PI / 2);
+    ctx.fillText(`${segmentHeight.toFixed(2)}ft`, 0, 0);
+    ctx.restore();
+
+    accumulatedHeight += segmentHeight;
+  });
+
+  ctx.restore();
+}
+
 export function calculateLargeFormat(context) {
   calculatePrintingLogic(context, context.getMaterials(), 'Large Format');
 }
@@ -100,6 +242,18 @@ export function calculatePrintingLogic(context, materialList, categoryLabel) {
   let subTotal = basePrice;
   details += `Base Price: ${context.getCurrentCurrency().symbol} ${context.formatCurrency(basePrice)}<br>`;
 
+  const jointCharge = calculateJointCharge(context, widthInFeet, heightInFeet);
+  if (jointCharge) {
+    const overlapDisplay = formatJointMeasurement(context, jointCharge.overlapHeightFt, unit);
+    const widthDisplay = formatJointMeasurement(context, widthInFeet, unit);
+    const jointMultiplierText = jointCharge.jointCount > 1 ? ` x ${jointCharge.jointCount} joint(s)` : '';
+
+    subTotal += jointCharge.totalCost;
+    details += `Joint: ${jointCharge.jointCount} joint(s) with ${jointCharge.printerSize.toFixed(0)}ft printer<br>`;
+    details += `Joint Material Cost ${overlapDisplay} x ${widthDisplay}${jointMultiplierText} : ${context.getCurrentCurrency().symbol} ${context.formatCurrency(jointCharge.totalMaterialCost)}<br>`;
+    details += `Glue Cost ${overlapDisplay} x ${widthDisplay}${jointMultiplierText} : ${context.getCurrentCurrency().symbol} ${context.formatCurrency(jointCharge.totalGlueCost)}<br>`;
+  }
+
   let eyelet = 0;
   let eyeletCost = 0;
   let glueCost = 0;
@@ -151,26 +305,29 @@ export function calculatePrintingLogic(context, materialList, categoryLabel) {
 
   const _lfDetailsCollapsed = resultDiv.querySelector('[data-lf-details][data-open="false"]') !== null;
   resultDiv.innerHTML = `
-    <div data-lf-invoice style="display:flex; align-items:stretch; justify-content:space-between; gap:17px; flex-wrap:wrap;">
-      <div style="flex:1; min-width:260px;">
-        <button onclick="(function(btn){var d=btn.closest('[data-lf-invoice]').querySelector('[data-lf-details]');var open=d.dataset.open!=='false';if(open){d.style.maxHeight='0';d.dataset.open='false';btn.querySelector('i').style.transform='rotate(-90deg)';}else{d.style.maxHeight=d.scrollHeight+'px';d.dataset.open='true';btn.querySelector('i').style.transform='rotate(0deg)';};})(this)" style="background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;gap:5px;color:var(--text-secondary);font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:4px;" title="Toggle details">
-          <i class="fas fa-chevron-down" style="font-size:10px;transition:transform 0.2s;"></i> Details
+    <div data-lf-invoice data-details-collapsed="${_lfDetailsCollapsed ? 'true' : 'false'}" class="lf-invoice-layout">
+      <div class="lf-invoice-details-wrap">
+        <button onclick="(function(btn){var root=btn.closest('[data-lf-invoice]');var d=root.querySelector('[data-lf-details]');var open=d.dataset.open!=='false';if(open){d.style.maxHeight='0';d.dataset.open='false';root.dataset.detailsCollapsed='true';btn.querySelector('i').style.transform='rotate(-90deg)';}else{d.style.maxHeight=d.scrollHeight+'px';d.dataset.open='true';root.dataset.detailsCollapsed='false';btn.querySelector('i').style.transform='rotate(0deg)';};})(this)" class="lf-invoice-toggle" title="Toggle details">
+          <i class="fas fa-chevron-down lf-invoice-toggle-icon"></i> Details
         </button>
-        <div data-lf-details data-open="true" style="font-size:14px; line-height:1.45; color:var(--text-secondary); overflow:hidden; max-height:600px; transition:max-height 0.35s ease;">
+        <div data-lf-details data-open="true" class="lf-invoice-details">
           ${details}
         </div>
       </div>
-      <div style="padding-left:14px; border-left:1px solid var(--border-color); text-align:right; flex-shrink:0; display:flex; flex-direction:column; justify-content:flex-end;">
-        <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-secondary); margin-bottom:3px;">Total Price</div>
-        <div style="font-size:28px; font-weight:800; color:${totalColor}; line-height:1; white-space:nowrap;">
+      <div class="lf-invoice-summary">
+        <div class="lf-invoice-summary-spacer" aria-hidden="true"></div>
+        <div class="lf-invoice-total-label">Total Price</div>
+        <div class="lf-invoice-total-value" style="color:${totalColor};">
           ${context.getCurrentCurrency().symbol} <span id="priceTicker">${context.formatCurrency(context.getPreviousTotalPrice())}</span>
         </div>
       </div>
     </div>
     <span id="lastSubTotal" data-subtotal="${subTotal}" style="display:none;"></span>`;
   if (_lfDetailsCollapsed) {
+    const root = resultDiv.querySelector('[data-lf-invoice]');
     const d = resultDiv.querySelector('[data-lf-details]');
     const i = resultDiv.querySelector('[data-lf-invoice] button i');
+    if (root) { root.dataset.detailsCollapsed = 'true'; }
     if (d) { d.style.maxHeight = '0'; d.dataset.open = 'false'; }
     if (i) { i.style.transform = 'rotate(-90deg)'; }
   }
@@ -189,6 +346,16 @@ export function calculatePrintingLogic(context, materialList, categoryLabel) {
 
     customDetails.push(`Size : ${presetLabel}${parseFloat(widthRaw.toFixed(2))}${unit} (W) x ${parseFloat(heightRaw.toFixed(2))}${unit} (H)`);
     customDetails.push(`Material : ${material.name}`);
+
+    if (jointCharge) {
+      const overlapDisplay = formatJointMeasurement(context, jointCharge.overlapHeightFt, unit);
+      const widthDisplay = formatJointMeasurement(context, widthInFeet, unit);
+      const jointMultiplierText = jointCharge.jointCount > 1 ? ` x ${jointCharge.jointCount} joint(s)` : '';
+
+      customDetails.push(`Printer : ${jointCharge.printerSize.toFixed(0)}ft`);
+      customDetails.push(`Joint Material Cost ${overlapDisplay} x ${widthDisplay}${jointMultiplierText} : ${context.getCurrentCurrency().symbol}${context.formatCurrency(jointCharge.totalMaterialCost)}`);
+      customDetails.push(`Glue Cost ${overlapDisplay} x ${widthDisplay}${jointMultiplierText} : ${context.getCurrentCurrency().symbol}${context.formatCurrency(jointCharge.totalGlueCost)}`);
+    }
 
     if (isCustomBorderActive) {
       const borderTop = parseFloat(document.getElementById('customBorderTop').value) || 0;
@@ -505,6 +672,12 @@ export function drawPreview(context, rawW, rawH, unit, widthInFeet, heightInFeet
     ctx.strokeStyle = '#9ca3af';
     ctx.lineWidth = 1;
     ctx.strokeRect(sx, sy, dw, dh);
+  }
+
+  const jointLayout = getJointLayout(heightInFeet);
+  if (jointLayout) {
+    drawJointOverlay(ctx, sx, sy, dw, dh, scale, jointLayout);
+    drawJointSegmentGuides(ctx, sx, sy, dw, scale, jointLayout);
   }
 
   drawDimensionLines(context, ctx, sxTotal, syTotal, totalDw, totalDh, finalRawW, finalRawH, unit);

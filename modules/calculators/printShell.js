@@ -97,6 +97,7 @@ export function capturePrintingCalculatorState(context) {
     customBorderLeft: document.getElementById('customBorderLeft') ? document.getElementById('customBorderLeft').value : null,
     customBorderRight: document.getElementById('customBorderRight') ? document.getElementById('customBorderRight').value : null,
     governmentChk: !!(document.getElementById('governmentChk') && document.getElementById('governmentChk').checked),
+    printerSize: document.getElementById('printerSize') ? document.getElementById('printerSize').value : 'none',
     artworkToolsOpen: !!(document.getElementById('artworkToolsPanel') && document.getElementById('artworkToolsPanel').classList.contains('panel-open')),
     downloadOptionsOpen: !!(document.getElementById('downloadOptionsPanel') && document.getElementById('downloadOptionsPanel').classList.contains('panel-open')),
     lastClickedASize: context.getLastClickedASize(),
@@ -131,6 +132,7 @@ export function restorePrintingCalculatorState(state, context) {
   if (document.getElementById('customBorderRight') && state.customBorderRight !== null) document.getElementById('customBorderRight').value = state.customBorderRight;
 
   if (document.getElementById('governmentChk')) document.getElementById('governmentChk').checked = !!state.governmentChk;
+  if (document.getElementById('printerSize') && state.printerSize) document.getElementById('printerSize').value = state.printerSize;
 
   const customBtn = document.getElementById('customBorderToggle');
   if (customBtn) {
@@ -222,60 +224,64 @@ ${gridHTML}
 <h2 style="width: 75%; max-width: 1100px; margin: 24px auto 0 auto; text-align: center; color: ${titleColor};">Material: ${material.name} (${currentCurrency.symbol} ${context.formatCurrency(context.getPricePerSqFt())}${priceUnit})${agentSuffix}</h2>
 <div class='calculator-panel'>
 
-<div>
-    <label for='itemTitle'>Custom Title (Optional):</label>
-    <input type='text' id='itemTitle' placeholder="e.g., Design Title" oninput="kiraHarga()" />
+<div class="lf-title-preset-row" style="display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: flex-end; margin-top: 6px;">
+  <div>
+  <label for='itemTitle'>Custom Title (Optional):</label>
+  <input type='text' id='itemTitle' placeholder="e.g., Design Title" oninput="kiraHarga()" />
+  </div>
+  <div>
+  <label>Preset A-Sizes:</label>
+  <div id="aSizeBtnGroup" class="size-btn-group" style="flex-wrap: wrap;"><button id="btn-A0" class="size-btn${agentClass}" onclick="setASize('A0', 841, 1189)">A0</button><button id="btn-A1" class="size-btn${agentClass}" onclick="setASize('A1', 594, 841)">A1</button><button id="btn-A2" class="size-btn${agentClass}" onclick="setASize('A2', 420, 594)">A2</button><button id="btn-A3" class="size-btn${agentClass}" onclick="setASize('A3', 297, 420)">A3</button><button id="btn-A4" class="size-btn${agentClass}" onclick="setASize('A4', 210, 297)">A4</button><button id="btn-A5" class="size-btn${agentClass}" onclick="setASize('A5', 148, 210)">A5</button><button id="btn-A6" class="size-btn${agentClass}" onclick="setASize('A6', 105, 148)">A6</button></div>
+  </div>
 </div>
-    
-    <div style="display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 12px; align-items: flex-end; margin-top: 10px;">
-        <div>
-            <label for='width'>Width:</label>
-            <div style="position: relative;">
-                <input type='number' id='width' step='0.1' value='${defaultWidth}' oninput='lastClickedASize = null; clearASizeHighlight(); handleDimensionInput("width");' ${isFixed ? 'disabled' : ''} class="p-2 border rounded-lg h-11 bg-white dark:bg-[#374151] text-gray-900 dark:text-white border-gray-300 dark:border-[#4b5563] w-full" style="padding-right: 35px; box-sizing: border-box;"/>
-                <span class="dynamic-unit" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 12px; pointer-events: none;">${currentInputUnit}</span>
-            </div>
-        </div>
-        <div>
-            <label for='height'>Height:</label>
-            <div style="position: relative;">
-                <input type='number' id='height' step='0.1' value='${defaultHeight}' oninput='lastClickedASize = null; clearASizeHighlight(); handleDimensionInput("height");' ${isFixed ? 'disabled' : ''} class="p-2 border rounded-lg h-11 bg-white dark:bg-[#374151] text-gray-900 dark:text-white border-gray-300 dark:border-[#4b5563] w-full" style="padding-right: 35px; box-sizing: border-box;"/>
-                <span class="dynamic-unit" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 12px; pointer-events: none;">${currentInputUnit}</span>
-            </div>
-        </div>
-        <button class="btn size-btn${agentClass}" onclick="switchDimensions()" style="height: 44px; width: 44px; padding: 0; display: flex; align-items: center; justify-content: center; flex-grow: 0; border-radius: 0.5rem;" ${isFixed ? 'disabled' : ''}><i class="fas fa-exchange-alt fa-fw"></i></button>
-        <button id="toggleRatioLockBtn" class="btn size-btn${agentClass}${lockActiveClass}" onclick="toggleRatioLock()" style="height: 44px; width: 44px; padding: 0; display: flex; align-items: center; justify-content: center; flex-grow: 0; border-radius: 0.5rem;" ${isFixed ? 'disabled' : ''}><i class="fas ${lockIconClass} fa-fw"></i></button>
-    </div>
 
-    <div class="options-grid" style="grid-template-columns: 1fr 2fr; align-items: end; gap: 20px; margin-top: 4px;">
-        <div>
-            <label for='measurementUnit'>Unit:</label>
-            <div class="custom-sticker-dropdown" id="measurementUnitWrapper" onclick="toggleGenericStickerDropdown(event, 'measurementUnitWrapper')">
-                <div class="custom-sticker-dropdown-trigger">
-                    <span class="custom-sticker-dropdown-label" id="measurementUnitLabel">Feet (ft)</span>
-                    <svg class="custom-sticker-dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <div class="custom-sticker-dropdown-options">
-                    <div class="custom-sticker-dropdown-option ${currentInputUnit === 'ft' ? 'selected' : ''}" data-value="ft" onmousedown="selectGenericStickerDropdownOption('measurementUnit', 'measurementUnitWrapper', 'ft', 'changeUnits')">Feet (ft)</div>
-                    <div class="custom-sticker-dropdown-option ${currentInputUnit === 'in' ? 'selected' : ''}" data-value="in" onmousedown="selectGenericStickerDropdownOption('measurementUnit', 'measurementUnitWrapper', 'in', 'changeUnits')">Inches (in)</div>
-                    <div class="custom-sticker-dropdown-option ${currentInputUnit === 'cm' ? 'selected' : ''}" data-value="cm" onmousedown="selectGenericStickerDropdownOption('measurementUnit', 'measurementUnitWrapper', 'cm', 'changeUnits')">Centimeter (cm)</div>
-                    <div class="custom-sticker-dropdown-option ${currentInputUnit === 'mm' ? 'selected' : ''}" data-value="mm" onmousedown="selectGenericStickerDropdownOption('measurementUnit', 'measurementUnitWrapper', 'mm', 'changeUnits')">Millimeter (mm)</div>
-                    <div class="custom-sticker-dropdown-option ${currentInputUnit === 'm' ? 'selected' : ''}" data-value="m" onmousedown="selectGenericStickerDropdownOption('measurementUnit', 'measurementUnitWrapper', 'm', 'changeUnits')">Meter (m)</div>
-                </div>
-                <select id='measurementUnit' onchange='changeUnits(this.value)' class="hidden-native-select" style="display:none;">
-                    <option value='ft' ${currentInputUnit === 'ft' ? 'selected' : ''}>Feet (ft)</option>
-                    <option value='in' ${currentInputUnit === 'in' ? 'selected' : ''}>Inches (in)</option>
-                    <option value='cm' ${currentInputUnit === 'cm' ? 'selected' : ''}>Centimeter (cm)</option>
-                    <option value='mm' ${currentInputUnit === 'mm' ? 'selected' : ''}>Millimeter (mm)</option>
-                    <option value='m' ${currentInputUnit === 'm' ? 'selected' : ''}>Meter (m)</option>
-                </select>
-            </div>
-        </div>
-        <div><label>Preset A-Sizes:</label><div id="aSizeBtnGroup" class="size-btn-group" style="flex-wrap: wrap;"><button id="btn-A0" class="size-btn${agentClass}" onclick="setASize('A0', 841, 1189)">A0</button><button id="btn-A1" class="size-btn${agentClass}" onclick="setASize('A1', 594, 841)">A1</button><button id="btn-A2" class="size-btn${agentClass}" onclick="setASize('A2', 420, 594)">A2</button><button id="btn-A3" class="size-btn${agentClass}" onclick="setASize('A3', 297, 420)">A3</button><button id="btn-A4" class="size-btn${agentClass}" onclick="setASize('A4', 210, 297)">A4</button><button id="btn-A5" class="size-btn${agentClass}" onclick="setASize('A5', 148, 210)">A5</button><button id="btn-A6" class="size-btn${agentClass}" onclick="setASize('A6', 105, 148)">A6</button></div></div>
+  <div class="lf-dimension-row">
+    <div class="lf-dimension-field lf-dimension-field--width">
+      <label for='width'>Width:</label>
+      <div style="position: relative;">
+        <input type='number' id='width' step='0.1' value='${defaultWidth}' oninput='lastClickedASize = null; clearASizeHighlight(); handleDimensionInput("width");' ${isFixed ? 'disabled' : ''} class="p-2 border rounded-lg h-11 bg-white dark:bg-[#374151] text-gray-900 dark:text-white border-gray-300 dark:border-[#4b5563] w-full" style="padding-right: 35px; box-sizing: border-box;"/>
+        <span class="dynamic-unit" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 12px; pointer-events: none;">${currentInputUnit}</span>
+      </div>
     </div>
+    <div class="lf-dimension-field lf-dimension-field--height">
+      <label for='height'>Height:</label>
+      <div style="position: relative;">
+        <input type='number' id='height' step='0.1' value='${defaultHeight}' oninput='lastClickedASize = null; clearASizeHighlight(); handleDimensionInput("height");' ${isFixed ? 'disabled' : ''} class="p-2 border rounded-lg h-11 bg-white dark:bg-[#374151] text-gray-900 dark:text-white border-gray-300 dark:border-[#4b5563] w-full" style="padding-right: 35px; box-sizing: border-box;"/>
+        <span class="dynamic-unit" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 12px; pointer-events: none;">${currentInputUnit}</span>
+      </div>
+    </div>
+    <div class="lf-dimension-field lf-dimension-field--unit">
+      <label for='measurementUnit'>Unit:</label>
+      <div class="custom-sticker-dropdown" id="measurementUnitWrapper" onclick="toggleGenericStickerDropdown(event, 'measurementUnitWrapper')">
+        <div class="custom-sticker-dropdown-trigger">
+          <span class="custom-sticker-dropdown-label" id="measurementUnitLabel">Feet (ft)</span>
+          <svg class="custom-sticker-dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="custom-sticker-dropdown-options">
+          <div class="custom-sticker-dropdown-option ${currentInputUnit === 'ft' ? 'selected' : ''}" data-value="ft" onmousedown="selectGenericStickerDropdownOption('measurementUnit', 'measurementUnitWrapper', 'ft', 'changeUnits')">Feet (ft)</div>
+          <div class="custom-sticker-dropdown-option ${currentInputUnit === 'in' ? 'selected' : ''}" data-value="in" onmousedown="selectGenericStickerDropdownOption('measurementUnit', 'measurementUnitWrapper', 'in', 'changeUnits')">Inches (in)</div>
+          <div class="custom-sticker-dropdown-option ${currentInputUnit === 'cm' ? 'selected' : ''}" data-value="cm" onmousedown="selectGenericStickerDropdownOption('measurementUnit', 'measurementUnitWrapper', 'cm', 'changeUnits')">Centimeter (cm)</div>
+          <div class="custom-sticker-dropdown-option ${currentInputUnit === 'mm' ? 'selected' : ''}" data-value="mm" onmousedown="selectGenericStickerDropdownOption('measurementUnit', 'measurementUnitWrapper', 'mm', 'changeUnits')">Millimeter (mm)</div>
+          <div class="custom-sticker-dropdown-option ${currentInputUnit === 'm' ? 'selected' : ''}" data-value="m" onmousedown="selectGenericStickerDropdownOption('measurementUnit', 'measurementUnitWrapper', 'm', 'changeUnits')">Meter (m)</div>
+        </div>
+        <select id='measurementUnit' onchange='changeUnits(this.value)' class="hidden-native-select" style="display:none;">
+          <option value='ft' ${currentInputUnit === 'ft' ? 'selected' : ''}>Feet (ft)</option>
+          <option value='in' ${currentInputUnit === 'in' ? 'selected' : ''}>Inches (in)</option>
+          <option value='cm' ${currentInputUnit === 'cm' ? 'selected' : ''}>Centimeter (cm)</option>
+          <option value='mm' ${currentInputUnit === 'mm' ? 'selected' : ''}>Millimeter (mm)</option>
+          <option value='m' ${currentInputUnit === 'm' ? 'selected' : ''}>Meter (m)</option>
+        </select>
+      </div>
+    </div>
+    <div class="lf-dimension-icon-group">
+      <button class="btn size-btn${agentClass} lf-dimension-icon-btn lf-dimension-icon-btn--switch" onclick="switchDimensions()" style="height: 44px; width: 44px; padding: 0; display: flex; align-items: center; justify-content: center; flex-grow: 0; border-radius: 0.5rem;" ${isFixed ? 'disabled' : ''}><i class="fas fa-exchange-alt fa-fw"></i></button>
+      <button id="toggleRatioLockBtn" class="btn size-btn${agentClass}${lockActiveClass} lf-dimension-icon-btn lf-dimension-icon-btn--lock" onclick="toggleRatioLock()" style="height: 44px; width: 44px; padding: 0; display: flex; align-items: center; justify-content: center; flex-grow: 0; border-radius: 0.5rem;" ${isFixed ? 'disabled' : ''}><i class="fas ${lockIconClass} fa-fw"></i></button>
+    </div>
+  </div>
             
-            <div style="display: grid; grid-template-columns: ${!material.simple ? '1fr 1fr auto' : '1fr auto'}; gap: 12px; margin-top: 10px; align-items: flex-end;">
+            <div class="lf-finishing-row" style="display: grid; grid-template-columns: ${!material.simple ? '1fr 1fr auto' : '1fr auto'}; gap: 12px; margin-top: 6px; align-items: flex-end;">
                 ${!material.simple ? `
                 <div>
                     <label for='eyeletOption'>Finishing:</label>
@@ -301,6 +307,7 @@ ${gridHTML}
                     </div>
                 </div>` : ''}
                 
+                <div class="lf-finishing-row-bottom">
                 <div>
                     <label for='whiteBorderOption'>White Border All Side:</label>
                     <div class="custom-sticker-dropdown" id="whiteBorderOptionWrapper" onclick="toggleGenericStickerDropdown(event, 'whiteBorderOptionWrapper')">
@@ -332,6 +339,7 @@ ${gridHTML}
                 <button id="customBorderToggle" class="btn btn-secondary${agentClass}" onclick="toggleCustomBorder()" style="width: auto; padding: 8px 16px; margin-bottom: 0; height: 44px; display: flex; align-items: center; justify-content: center;">
                     Custom
                 </button>
+                </div>
             </div>
 
             <div id='manualEyeletFields' style='display:none; margin-top: 10px; grid-template-columns: repeat(4, 1fr); gap: 10px;'>
@@ -373,12 +381,87 @@ ${gridHTML}
                 </div>
                 <span class="text-xs text-gray-500 dark:text-gray-400 mt-2">*The input size is based on the currently selected measurement unit. During Custom White Border, make sure use Inch.</span>
             </div>
-            <div class="modern-checkbox-grid" style="grid-template-columns: 1fr; margin-top: 16px;">
-        <div class="checkbox-group">
-            <input type='checkbox' id='governmentChk' onchange="kiraHarga()"/>
-            <label for='governmentChk'>Add Government ${context.getGlobalGovSurchargePercent()}%</label>
-        </div>
-    </div>
+            ${!material.simple ? `
+            <div class="lf-gov-printer-row" style="display: grid; grid-template-columns: 1fr 1fr auto; column-gap: 16px; row-gap: 4px; margin-top: 8px; align-items: start;">
+              <div class="calculator-label-like" style="grid-column: 1; grid-row: 1;">Add Government</div>
+
+              <div style="grid-column: 1; grid-row: 2;">
+                <div class="modern-checkbox-grid" style="grid-template-columns: 1fr; margin: 0;">
+                  <div class="checkbox-group" style="height: 44px; box-sizing: border-box; display: flex; align-items: center;">
+                    <input type='checkbox' id='governmentChk' onchange="kiraHarga()"/>
+                    <label for='governmentChk'>${context.getGlobalGovSurchargePercent()}%</label>
+                  </div>
+                </div>
+              </div>
+
+              <label for='printerSize' class="calculator-label-like" style="grid-column: 2 / 4; grid-row: 1;">Select Printer for Joint Glue Cost:</label>
+
+              <div style="grid-column: 2 / 4; grid-row: 2;">
+                <div class="custom-sticker-dropdown" id="printerSizeWrapper" onclick="toggleGenericStickerDropdown(event, 'printerSizeWrapper')">
+                  <div class="custom-sticker-dropdown-trigger">
+                    <span class="custom-sticker-dropdown-label" id="printerSizeLabel">None</span>
+                    <svg class="custom-sticker-dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="custom-sticker-dropdown-options">
+                    <div class="custom-sticker-dropdown-option selected" onmousedown="selectGenericStickerDropdownOption('printerSize', 'printerSizeWrapper', 'none', 'kiraHarga')">None</div>
+                    <div class="custom-sticker-dropdown-option" onmousedown="selectGenericStickerDropdownOption('printerSize', 'printerSizeWrapper', '4', 'kiraHarga')">4ft</div>
+                    <div class="custom-sticker-dropdown-option" onmousedown="selectGenericStickerDropdownOption('printerSize', 'printerSizeWrapper', '5', 'kiraHarga')">5ft</div>
+                    <div class="custom-sticker-dropdown-option" onmousedown="selectGenericStickerDropdownOption('printerSize', 'printerSizeWrapper', '6', 'kiraHarga')">6ft</div>
+                    <div class="custom-sticker-dropdown-option" onmousedown="selectGenericStickerDropdownOption('printerSize', 'printerSizeWrapper', '8', 'kiraHarga')">8ft</div>
+                    <div class="custom-sticker-dropdown-option" onmousedown="selectGenericStickerDropdownOption('printerSize', 'printerSizeWrapper', '10', 'kiraHarga')">10ft</div>
+                    <div class="custom-sticker-dropdown-option" onmousedown="selectGenericStickerDropdownOption('printerSize', 'printerSizeWrapper', '16', 'kiraHarga')">16ft</div>
+                  </div>
+                  <select id='printerSize' onchange='kiraHarga()' class="hidden-native-select" style="display:none;">
+                    <option value='none' selected>None</option>
+                    <option value='4'>4ft</option>
+                    <option value='5'>5ft</option>
+                    <option value='6'>6ft</option>
+                    <option value='8'>8ft</option>
+                    <option value='10'>10ft</option>
+                    <option value='16'>16ft</option>
+                  </select>
+                </div>
+              </div>
+            </div>` : `
+            <div style="display: grid; grid-template-columns: 1fr; row-gap: 4px; margin-top: 8px; align-items: start;">
+              <div class="calculator-label-like">Add Government</div>
+              <div class="modern-checkbox-grid" style="grid-template-columns: 1fr; margin: 0;">
+                <div class="checkbox-group">
+                  <input type='checkbox' id='governmentChk' onchange="kiraHarga()"/>
+                  <label for='governmentChk'>${context.getGlobalGovSurchargePercent()}%</label>
+                </div>
+              </div>
+
+              <label for='printerSize' class="calculator-label-like">Select Printer for Joint Glue Cost:</label>
+              <div class="custom-sticker-dropdown" id="printerSizeWrapper" onclick="toggleGenericStickerDropdown(event, 'printerSizeWrapper')">
+                <div class="custom-sticker-dropdown-trigger">
+                  <span class="custom-sticker-dropdown-label" id="printerSizeLabel">None</span>
+                  <svg class="custom-sticker-dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div class="custom-sticker-dropdown-options">
+                  <div class="custom-sticker-dropdown-option selected" onmousedown="selectGenericStickerDropdownOption('printerSize', 'printerSizeWrapper', 'none', 'kiraHarga')">None</div>
+                  <div class="custom-sticker-dropdown-option" onmousedown="selectGenericStickerDropdownOption('printerSize', 'printerSizeWrapper', '4', 'kiraHarga')">4ft</div>
+                  <div class="custom-sticker-dropdown-option" onmousedown="selectGenericStickerDropdownOption('printerSize', 'printerSizeWrapper', '5', 'kiraHarga')">5ft</div>
+                  <div class="custom-sticker-dropdown-option" onmousedown="selectGenericStickerDropdownOption('printerSize', 'printerSizeWrapper', '6', 'kiraHarga')">6ft</div>
+                  <div class="custom-sticker-dropdown-option" onmousedown="selectGenericStickerDropdownOption('printerSize', 'printerSizeWrapper', '8', 'kiraHarga')">8ft</div>
+                  <div class="custom-sticker-dropdown-option" onmousedown="selectGenericStickerDropdownOption('printerSize', 'printerSizeWrapper', '10', 'kiraHarga')">10ft</div>
+                  <div class="custom-sticker-dropdown-option" onmousedown="selectGenericStickerDropdownOption('printerSize', 'printerSizeWrapper', '16', 'kiraHarga')">16ft</div>
+                </div>
+                <select id='printerSize' onchange='kiraHarga()' class="hidden-native-select" style="display:none;">
+                  <option value='none' selected>None</option>
+                  <option value='4'>4ft</option>
+                  <option value='5'>5ft</option>
+                  <option value='6'>6ft</option>
+                  <option value='8'>8ft</option>
+                  <option value='10'>10ft</option>
+                  <option value='16'>16ft</option>
+                </select>
+              </div>
+            </div>`}
 
     <div class='result' id='result'></div>
 
@@ -389,18 +472,18 @@ ${gridHTML}
             <span style='font-weight: 700; color: var(--primary-color); font-size: 18px;'>Drop Artwork Here</span>
         </div>
     </div>
-    <div style="display: flex; justify-content: center; gap: 8px; margin-top: 12px; width: 760px; margin-left: auto; margin-right: auto;">
-        <button class="btn btn-sm btn-secondary" id="artworkToolsBtn" onclick="toggleArtworkTools()" style="flex: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
+    <div class="preview-action-grid">
+      <button class="btn btn-sm btn-secondary preview-action-btn" id="artworkToolsBtn" onclick="toggleArtworkTools()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
             <i class="fas fa-image mr-2"></i> Manage Artwork Design
             <i class="fas fa-chevron-down ml-1" id="artToggleIcon"></i>
         </button>
         
-        <button class="btn btn-secondary btn-sm" id="downloadOptionsBtn" onclick="toggleDownloadOptions()" style="flex: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
+      <button class="btn btn-secondary btn-sm preview-action-btn" id="downloadOptionsBtn" onclick="toggleDownloadOptions()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
             <i class="fas fa-file-export mr-2"></i> Download Options
             <i class="fas fa-chevron-down ml-1" id="dlToggleIcon"></i>
         </button>
         
-        <button class="btn btn-secondary btn-sm" onclick="downloadPreviewCanvas()" style="flex: 1; background: transparent; color: #28a745; border: 1px solid #28a745;">
+      <button class="btn btn-secondary btn-sm preview-action-btn preview-action-btn--span" onclick="downloadPreviewCanvas()" style="background: transparent; color: #28a745; border: 1px solid #28a745;">
             <i class="fas fa-camera mr-2"></i> Download Preview
         </button>
     </div>

@@ -195,7 +195,7 @@ export function kiraIdCard(ctx) {
             </div>
             ${taxRow}
         </div>
-        <div class="${globalAgentMode ? 'bg-green-600' : 'bg-blue-600'} text-white p-4 text-right">
+        <div class="${globalAgentMode ? 'bg-green-600' : 'bg-blue-600'} text-white p-2 text-right">
             <div class="text-xl font-bold">Total for ${qty} Cards: ${currentCurrency.symbol} ${formatCurrency(finalTotal)}</div>
         </div>
         <a href="https://drive.google.com/drive/folders/1i_tgc97MS-UtGqVr1Iew2pSG2uU63HSJ?usp=sharing" target="_blank"

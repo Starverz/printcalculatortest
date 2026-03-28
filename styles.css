@@ -238,6 +238,263 @@ label {
   font-size: 14px;
 }
 
+.calculator-label-like {
+  font-weight: 600;
+  margin: 8px 0 4px 0;
+  display: block;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.preview-action-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 12px;
+  width: min(100%, 760px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.preview-action-btn {
+  width: 100%;
+  margin-top: 0;
+}
+
+.lf-dimension-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 44px 44px;
+  gap: 12px;
+  align-items: flex-end;
+  margin-top: 6px;
+}
+
+.lf-dimension-icon-btn {
+  height: 44px;
+  width: 44px;
+}
+
+.lf-dimension-icon-group {
+  display: contents;
+}
+
+.lf-finishing-row-bottom {
+  display: contents;
+}
+
+.lf-invoice-layout {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 17px;
+  flex-wrap: wrap;
+}
+
+.lf-invoice-details-wrap {
+  flex: 1;
+  min-width: 260px;
+}
+
+.lf-invoice-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.lf-invoice-toggle-icon {
+  font-size: 10px;
+  transition: transform 0.2s ease;
+}
+
+.lf-invoice-details {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  overflow: hidden;
+  max-height: 600px;
+  transition: max-height 0.35s ease;
+}
+
+.lf-invoice-summary {
+  padding-left: 14px;
+  border-left: 1px solid var(--border-color);
+  text-align: right;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  transition: padding 0.3s ease, margin 0.3s ease, width 0.3s ease, border-color 0.3s ease;
+}
+
+.lf-invoice-summary-spacer {
+  height: 0;
+  opacity: 0;
+  transition: height 0.3s ease, opacity 0.3s ease;
+}
+
+.lf-invoice-total-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-bottom: 3px;
+}
+
+.lf-invoice-total-value {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .preview-action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .preview-action-grid .preview-action-btn--span {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 861px) {
+  #aSizeBtnGroup .size-btn {
+    width: 44px;
+    padding: 0;
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+}
+
+@media (min-width: 900px) {
+  .preview-action-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .preview-action-grid .preview-action-btn--span {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 860px) {
+  .lf-title-preset-row {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 639px) {
+  .lf-dimension-row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .lf-dimension-field--width,
+  .lf-dimension-field--height {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 0;
+  }
+
+  .lf-dimension-field--unit {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .lf-finishing-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .lf-gov-printer-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .lf-gov-printer-row > * {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+  }
+
+  #aSizeBtnGroup {
+    display: grid !important;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  #aSizeBtnGroup button:nth-child(-n+4) {
+    grid-column: span 3;
+  }
+
+  #aSizeBtnGroup button:nth-child(n+5) {
+    grid-column: span 4;
+  }
+
+  .lf-finishing-row-bottom {
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: flex-end;
+  }
+
+  .lf-dimension-icon-group {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    margin-left: auto;
+  }
+
+  .lf-invoice-summary {
+    width: 100%;
+    padding-left: 0;
+    padding-top: 10px;
+    margin-left: auto;
+    border-left: none;
+    align-items: flex-end;
+  }
+
+  .lf-invoice-summary-spacer {
+    height: 14px;
+    opacity: 1;
+  }
+
+  .lf-invoice-layout[data-details-collapsed="true"] {
+    flex-wrap: nowrap;
+    align-items: flex-start;
+  }
+
+  .lf-invoice-layout[data-details-collapsed="true"] .lf-invoice-details-wrap {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .lf-invoice-layout[data-details-collapsed="true"] .lf-invoice-summary {
+    width: auto;
+    padding-top: 0;
+    padding-left: 10px;
+    margin-left: auto;
+    border-left: 1px solid var(--border-color);
+    flex: 0 0 auto;
+    align-self: flex-start;
+  }
+
+  .lf-invoice-layout[data-details-collapsed="true"] .lf-invoice-summary-spacer {
+    height: 0;
+    opacity: 0;
+  }
+
+  .lf-invoice-layout[data-details-collapsed="true"] .lf-invoice-total-value {
+    font-size: 24px;
+  }
+}
+
 /* =================================== */
 /* == 3. Base Form Elements == */
 /* =================================== */
@@ -423,12 +680,27 @@ textarea:focus {
 
 /* --- Bottom Dock --- */
 #bottomDock {
-  /* This is the new stationary container */
-  width: 650px;
-  /* A fixed width to prevent the dock from resizing */
-  display: flex;
-  justify-content: center;
-  /* Center the icon container within it */
+  /* Scrollable viewport; grows to fit all icons, scrolls only when screen is too narrow */
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  display: block;
+  padding-top: 64px;
+  padding-bottom: 28px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-bottom: -28px;
+  box-sizing: content-box;
+  overflow-x: auto;
+  overflow-y: visible;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  cursor: default;
+}
+
+#bottomDock::-webkit-scrollbar {
+  display: none;
 }
 
 #dockContainer {
@@ -448,6 +720,10 @@ textarea:focus {
   border-radius: 1.25rem;
   /* rounded-2xl */
   transition: all 0.2s;
+  flex-wrap: nowrap;
+  width: max-content;
+  min-width: auto;
+  margin: 0 auto;
 }
 
 .dock-item {
@@ -462,6 +738,8 @@ textarea:focus {
   transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   cursor: pointer;
   position: relative;
+  overflow: visible;
+  z-index: 1;
   will-change: width, height;
   /* NEW: Individual glass effect for each icon */
   background-color: rgba(255, 255, 255, 0.8);
@@ -471,9 +749,14 @@ textarea:focus {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+.dock-item:hover {
+  z-index: 20;
+}
+
 .dock-label {
   position: absolute;
-  bottom: 130%;
+  left: 50%;
+  bottom: calc(100% + 10px);
   background-color: rgba(20, 20, 20, 0.8);
   color: white;
   padding: 4px 8px;
@@ -481,15 +764,25 @@ textarea:focus {
   font-size: 12px;
   font-weight: 500;
   opacity: 0;
-  transform: translateY(8px);
+  transform: translate(-50%, 8px);
   transition: opacity 0.2s, transform 0.2s;
   pointer-events: none;
   white-space: nowrap;
+  z-index: 21;
 }
 
 .dock-item:hover .dock-label {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
+}
+
+#bottomDock.is-dragging {
+  cursor: grabbing;
+}
+
+#bottomDock.is-dragging .dock-item,
+#bottomDock.is-dragging .dock-label {
+  pointer-events: none;
 }
 
 /* --- Side Navigation Drawer (Flowbite) --- */
@@ -689,6 +982,8 @@ html.dark .settings-table .btn-secondary:hover {
 
 .size-btn {
   padding: 10px 16px;
+  height: 44px;
+  box-sizing: border-box;
   background: var(--content-bg);
   border: 1px solid var(--border-color) !important;
   border-radius: var(--border-radius);
@@ -713,6 +1008,18 @@ html.dark .settings-table .btn-secondary:hover {
   color: #fff;
   box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
   transform: translateY(-2px);
+}
+
+#invCardMaterialGroup .size-btn {
+  height: auto;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: normal;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  padding: 10px 12px;
 }
 
 /* --- Modern Checkboxes --- */
@@ -2227,21 +2534,15 @@ html.dark .sticker-editor-wrapper .canvas-summary-text {
 
 /* --- Quote Pad (Sidebar) --- */
 #quotePadTrigger {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 60px;
-  /* Increased width for better hover area */
-  height: 100%;
-  z-index: 98;
-  /* Sits below the button but above other page content */
+  position: static;
+  width: 0;
+  height: 0;
 }
 
 #quotePadToggleBtn {
-  position: absolute;
+  position: fixed;
   top: 6%;
   right: 33px;
-  /* Positions the button inside the trigger area */
   background-color: var(--primary-color);
   color: white;
   padding: 5px 10px;
@@ -2254,6 +2555,7 @@ html.dark .sticker-editor-wrapper .canvas-summary-text {
   white-space: nowrap;
   display: flex;
   align-items: center;
+  z-index: 99;
   /* Rotate the button and hide it by default by pushing it off-screen */
   transform-origin: top right;
   transform: translateY(-50%) rotate(270deg) translateX(0%);
@@ -3126,6 +3428,10 @@ html.dark .calculator-panel {
 
 html.dark .calculator-panel label,
 html.dark .calculator-panel .checkbox-group label {
+  color: var(--text-secondary);
+}
+
+html.dark .calculator-panel .calculator-label-like {
   color: var(--text-secondary);
 }
 

@@ -66,51 +66,56 @@ export function addInvitationCardToPad(context) {
 export function generateInvitationPriceListHTML(context, data, forceAgent = null, showHeader = true) {
   const baseObj = data.basePrice;
   const useAgent = forceAgent !== null ? forceAgent : context.getGlobalAgentMode();
-  const mainTitleColor = useAgent ? 'text-green-600 dark:text-green-500' : 'text-gray-800 dark:text-white';
-  const accentBorder = useAgent ? 'border-green-600 dark:border-green-500' : 'border-teal-600 dark:border-teal-500';
-  const titleText = useAgent ? 'INVITATION CARD PRICE LIST (AGENT)' : 'INVITATION CARD PRICE LIST (CUSTOMER)';
+  const mainTitleColor = useAgent ? 'text-green-600 dark:text-green-500' : 'text-teal-600 dark:text-teal-400';
+  const titleText = useAgent ? 'INVITATION CARD PRICE LIST (AGENT)' : 'INVITATION CARD PRICE LIST';
+  const bannerBg = useAgent ? 'background:#16a34a' : 'background:#0d9488';
 
+  // Base price table — two sub-columns per size (1 Side / 2 Side)
   const basePriceRows = data.quantities.map((qty) => `
         <tr class="border-b border-gray-200 dark:border-gray-700">
-            <td class="p-3 text-left text-gray-800 dark:text-gray-200 font-semibold">${qty} pcs</td>
-            ${data.sizes.map((size) => {
+            <td class="p-2 text-left text-gray-800 dark:text-gray-200 font-semibold">${qty} pcs</td>
+            ${data.sizes.flatMap((size) => {
               const side1Obj = baseObj[size]?.[qty]?.[1];
               const side2Obj = baseObj[size]?.[qty]?.[2];
               const side1 = useAgent ? side1Obj?.agentPrice : side1Obj?.customerPrice;
               const side2 = useAgent ? side2Obj?.agentPrice : side2Obj?.customerPrice;
-              return `<td class="p-3 text-gray-600 dark:text-gray-400">1 Side: ${context.formatCurrency(side1 ?? 0)}<br>2 Side: ${context.formatCurrency(side2 ?? 0)}</td>`;
+              return [
+                `<td class="p-2 text-center text-gray-600 dark:text-gray-400">${context.formatCurrency(side1 ?? 0)}</td>`,
+                `<td class="p-2 text-center text-gray-600 dark:text-gray-400">${context.formatCurrency(side2 ?? 0)}</td>`
+              ];
             }).join('')}
         </tr>`).join('');
 
   const materialRows = data.materials.map((material) => `
         <tr class="border-b border-gray-200 dark:border-gray-700">
-            <td class="p-3 text-left text-gray-800 dark:text-gray-200 font-semibold">${material.name}</td>
+            <td class="p-2 text-left text-gray-800 dark:text-gray-200 font-semibold">${material.name}</td>
             ${data.sizes.map((size) => {
               const priceObj = material.addOn[size] || { customerPrice: 0, agentPrice: 0 };
               const price = useAgent ? priceObj.agentPrice : priceObj.customerPrice;
-              return `<td class="p-3 text-gray-600 dark:text-gray-400">+ ${context.formatCurrency(price)}</td>`;
+              return `<td class="p-2 text-center text-gray-600 dark:text-gray-400">+ ${context.formatCurrency(price)}</td>`;
             }).join('')}
         </tr>`).join('');
 
   const addonTablesHTML = data.addons.map((addon) => {
     const optionRows = addon.options.map((option) => `
           <tr class="border-b border-gray-200 dark:border-gray-700 last:border-0">
-              <td class="p-3 text-left text-gray-800 dark:text-gray-200 font-semibold">${option.name}</td>
+              <td class="p-2 text-left text-gray-800 dark:text-gray-200 font-semibold">${option.name}</td>
               ${data.sizes.map((size) => {
                 const priceObj = option.prices[size] || { customerPrice: 0, agentPrice: 0 };
                 const price = useAgent ? priceObj.agentPrice : priceObj.customerPrice;
-                return `<td class="p-3 text-gray-600 dark:text-gray-400">+ ${context.formatCurrency(price)}</td>`;
+                return `<td class="p-2 text-center text-gray-600 dark:text-gray-400">+ ${context.formatCurrency(price)}</td>`;
               }).join('')}
           </tr>`).join('');
 
     return `
       <div class="overflow-x-auto mt-6">
-        <h3 class="font-bold text-lg mb-3 text-gray-800 dark:text-white">${addon.name}</h3>
-        <table class="w-full border-collapse text-sm text-center">
+        <div style="${bannerBg}; color:#fff; text-align:center; font-weight:700; font-size:13px; letter-spacing:0.05em; padding:10px 12px; border-radius:4px 4px 0 0;">${addon.name.toUpperCase()} PRICES (PER PIECE)</div>
+        <table class="w-full border-collapse text-sm text-center" style="table-layout:fixed;">
+          <colgroup><col style="width:30%">${data.sizes.map(() => `<col style="width:${70/data.sizes.length}%">`).join('')}</colgroup>
           <thead class="bg-gray-100 dark:bg-gray-700">
             <tr>
-              <th class="p-3 text-left font-semibold border-b-2 ${accentBorder} text-gray-800 dark:text-white">OPTION</th>
-              ${data.sizes.map((size) => `<th class="p-3 font-semibold border-b-2 ${accentBorder} text-gray-800 dark:text-white">${size}</th>`).join('')}
+              <th class="p-2 text-left font-semibold text-gray-800 dark:text-white">${addon.name.toUpperCase().includes('LAMIN') ? 'LAMINATION' : 'OPTION'}</th>
+              ${data.sizes.map((size) => `<th class="p-2 font-semibold text-gray-800 dark:text-white">${size}</th>`).join('')}
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-gray-800">${optionRows}</tbody>
@@ -140,12 +145,19 @@ export function generateInvitationPriceListHTML(context, data, forceAgent = null
       </div>` : ''}
 
       <div class="overflow-x-auto">
-        <h3 class="font-bold text-lg mb-3 text-gray-800 dark:text-white">Base Price</h3>
+        <div style="${bannerBg}; color:#fff; text-align:center; font-weight:700; font-size:13px; letter-spacing:0.05em; padding:10px 12px; border-radius:4px 4px 0 0;">BASE PRINTING PRICES (PER PIECE) (RM)</div>
+        <div style="text-align:center; font-size:12px; color:#6b7280; padding:6px 0 4px;">(Based on Simili 80gsm Paper)</div>
         <table class="w-full border-collapse text-sm text-center">
           <thead class="bg-gray-100 dark:bg-gray-700">
             <tr>
-              <th class="p-3 text-left font-semibold border-b-2 ${accentBorder} text-gray-800 dark:text-white">QUANTITY</th>
-              ${data.sizes.map((size) => `<th class="p-3 font-semibold border-b-2 ${accentBorder} text-gray-800 dark:text-white">${size}</th>`).join('')}
+              <th class="p-2 text-left font-semibold text-gray-800 dark:text-white" rowspan="2">QUANTITY</th>
+              ${data.sizes.map((size) => `<th class="p-2 font-semibold text-gray-800 dark:text-white" colspan="2">${size}</th>`).join('')}
+            </tr>
+            <tr>
+              ${data.sizes.flatMap(() => [
+                `<th class="p-2 font-semibold text-gray-600 dark:text-gray-300 text-xs">1 Side</th>`,
+                `<th class="p-2 font-semibold text-gray-600 dark:text-gray-300 text-xs">2 Side</th>`
+              ]).join('')}
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-gray-800">${basePriceRows}</tbody>
@@ -153,17 +165,18 @@ export function generateInvitationPriceListHTML(context, data, forceAgent = null
       </div>
 
       <div class="overflow-x-auto mt-6">
-         <h3 class="font-bold text-lg mb-3 text-gray-800 dark:text-white">Material Add-on</h3>
-         <table class="w-full border-collapse text-sm text-center">
-            <thead class="bg-gray-100 dark:bg-gray-700">
-                <tr>
-                    <th class="p-3 text-left font-semibold border-b-2 ${accentBorder} text-gray-800 dark:text-white">MATERIAL</th>
-                    ${data.sizes.map((size) => `<th class="p-3 font-semibold border-b-2 ${accentBorder} text-gray-800 dark:text-white">${size}</th>`).join('')}
-                </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-gray-800">${materialRows}</tbody>
+        <div style="${bannerBg}; color:#fff; text-align:center; font-weight:700; font-size:13px; letter-spacing:0.05em; padding:10px 12px; border-radius:4px 4px 0 0;">MATERIAL ADD-ON PRICES (PER PIECE)</div>
+        <table class="w-full border-collapse text-sm text-center" style="table-layout:fixed;">
+          <colgroup><col style="width:30%">${data.sizes.map(() => `<col style="width:${70/data.sizes.length}%">`).join('')}</colgroup>
+          <thead class="bg-gray-100 dark:bg-gray-700">
+            <tr>
+              <th class="p-2 text-left font-semibold text-gray-800 dark:text-white">MATERIAL</th>
+              ${data.sizes.map((size) => `<th class="p-2 font-semibold text-gray-800 dark:text-white">${size}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-800">${materialRows}</tbody>
         </table>
-    </div>
+      </div>
 
     ${addonTablesHTML}
     </div>
@@ -369,7 +382,7 @@ export function kiraInvitationCard(context) {
             ${taxRow}
         </div>
 
-        <div class="${context.getGlobalAgentMode() ? 'bg-green-600' : 'bg-blue-600'} text-white p-4 text-right">
+        <div class="${context.getGlobalAgentMode() ? 'bg-green-600' : 'bg-blue-600'} text-white p-2 text-right">
             <div class="text-xl font-bold">
                 Total for ${customQty} pcs: ${context.getCurrentCurrency().symbol} ${context.formatCurrency(finalTotal)}
             </div>

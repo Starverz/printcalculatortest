@@ -112,7 +112,7 @@ export function kiraBusinessCard(context) {
             ${taxRow}
         </div>
 
-        <div class="${context.getGlobalAgentMode() ? 'bg-green-600' : 'bg-blue-600'} text-white p-4 text-right">
+        <div class="${context.getGlobalAgentMode() ? 'bg-green-600' : 'bg-blue-600'} text-white p-2 text-right">
             <div class="text-xl font-bold">
                 Total for ${qty} Box${qty > 1 ? 'es' : ''}: ${context.getCurrentCurrency().symbol} ${context.formatCurrency(finalTotal)}
             </div>

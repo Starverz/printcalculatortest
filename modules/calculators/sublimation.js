@@ -503,8 +503,8 @@ export function kiraSublimation(ctx) {
                     <span class="font-bold text-gray-800 dark:text-gray-200">${currentCurrency.symbol} ${formatCurrency(finalTotalPerPiece)}</span>
                 </div>
             </div>
-            <div class="${globalAgentMode ? 'bg-green-600' : 'bg-blue-600'} text-white p-4 text-right">
-                <div class="text-xl font-bold">Total for ${calcQty} pcs: ${currentCurrency.symbol} ${formatCurrency(grandTotal)}</div>
+            <div class="${globalAgentMode ? 'bg-green-600' : 'bg-blue-600'} text-white p-2 text-right">
+                <div class="text-xl font-bold" style="display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: baseline; gap: 0 6px;"><span>Total for ${calcQty} pcs:</span><span style="white-space: nowrap;">${currentCurrency.symbol} ${formatCurrency(grandTotal)}</span></div>
             </div>
             <a href="https://drive.google.com/drive/folders/15XN8y-K_l-u-VvbL-lXwFhy7_Kq_wZ_J?usp=sharing" target="_blank" class="block bg-gray-500 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 text-white text-center py-3 font-semibold transition-colors">Download Sublimation Template</a>
         </div>`;

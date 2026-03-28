@@ -405,7 +405,7 @@ export function kiraLanyard(ctx) {
   invoiceEl.innerHTML = `
             <div class="mt-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
                 <div class="p-6">${invoiceBodyHTML}</div>
-                <div class="${globalAgentMode ? 'bg-green-600' : 'bg-blue-600'} text-white p-4 text-right">
+                <div class="${globalAgentMode ? 'bg-green-600' : 'bg-blue-600'} text-white p-2 text-right">
                     <div class="text-xl font-bold">Total for ${customQty} pcs: ${currentCurrency.symbol} ${formatCurrency(finalTotal)}</div>
                 </div>
                 <a href="https://www.google.com/" target="_blank" class="block bg-gray-500 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 text-white text-center py-3 font-semibold transition-colors">Download Lanyard Template</a>

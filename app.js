@@ -508,23 +508,37 @@ function initializeDock() {
   const dockCategories = allDockCategories.filter(cat => pageVisibility[cat.page] !== false);
 
   const dockContainer = document.getElementById('dockContainer');
-  if (!dockContainer) return;
+  const bottomDock = document.getElementById('bottomDock');
+  if (!dockContainer || !bottomDock) return;
 
-  // Create dock items dynamically
+  // Restore original: plain <a> with inline onclick — most reliable click mechanism
   dockContainer.innerHTML = dockCategories.map(item => `
-        <a class="dock-item" onclick="loadPage('${item.page}')">
-            <i class="${item.icon}"></i>
-            <div class="dock-label">${item.name}</div>
-        </a>
-    `).join('');
+    <a class="dock-item" onclick="loadPage('${item.page}')">
+      <i class="${item.icon}"></i>
+      <div class="dock-label">${item.name}</div>
+    </a>
+  `).join('');
 
   const dockItems = Array.from(dockContainer.children);
-  const baseSize = 44; // Must match the width/height in your CSS
-  const maxSize = 80; // The largest an icon can get
-  const magnificationDistance = 150; // How far the mouse can be for the effect to start
+  const baseSize = 44;
+  const maxSize = 80;
+  const magnificationDistance = 150;
+  const canDockHover = () => window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-  // Mouse move animation logic
-  dockContainer.addEventListener('mousemove', (e) => {
+  const resetDockMagnification = () => {
+    dockItems.forEach((item) => {
+      item.style.width = '';
+      item.style.height = '';
+      const icon = item.querySelector('i');
+      if (icon) icon.style.fontSize = '';
+    });
+  };
+
+  dockContainer.onmousemove = (e) => {
+    if (!canDockHover() || bottomDock.classList.contains('is-dragging')) {
+      resetDockMagnification();
+      return;
+    }
     const dockRect = dockContainer.getBoundingClientRect();
     const mouseX = e.clientX - dockRect.left;
     dockItems.forEach((item) => {
@@ -537,24 +551,64 @@ function initializeDock() {
       item.style.width = `${newSize}px`;
       item.style.height = `${newSize}px`;
       const icon = item.querySelector('i');
-      if (icon) {
-        const newIconSize = newSize * 0.5; // Icon size will be 50% of the container's size
-        icon.style.fontSize = `${newIconSize}px`;
-      }
+      if (icon) icon.style.fontSize = `${newSize * 0.5}px`;
     });
-  });
+  };
 
-  // Reset animation when mouse leaves
-  dockContainer.addEventListener('mouseleave', () => {
-    dockItems.forEach((item) => {
-      item.style.width = '';
-      item.style.height = '';
-      const icon = item.querySelector('i');
-      if (icon) {
-        icon.style.fontSize = '';
-      }
-    });
-  });
+  let isDockNavigating = false;
+
+  dockContainer.onmouseleave = () => {
+    if (isDockNavigating) return;
+    resetDockMagnification();
+  };
+
+  // Drag-to-scroll: only capture pointer AFTER drag threshold, so normal clicks pass through
+  let dragPointerId = null;
+  let dragStartX = 0;
+  let dragStartScrollLeft = 0;
+  let isDraggingDock = false;
+
+  const endDockDrag = () => {
+    dragPointerId = null;
+    isDraggingDock = false;
+    bottomDock.classList.remove('is-dragging');
+  };
+
+  bottomDock.onpointerdown = (event) => {
+    if (event.button !== 0) return;
+    dragPointerId = event.pointerId;
+    dragStartX = event.clientX;
+    dragStartScrollLeft = bottomDock.scrollLeft;
+    isDraggingDock = false;
+    // Do NOT setPointerCapture here — doing so would hijack the click event
+  };
+
+  bottomDock.onpointermove = (event) => {
+    if (dragPointerId !== event.pointerId) return;
+    const deltaX = event.clientX - dragStartX;
+    if (!isDraggingDock && Math.abs(deltaX) > 6) {
+      isDraggingDock = true;
+      bottomDock.classList.add('is-dragging');
+      // Only capture after confirmed drag so click events are unaffected
+      try { bottomDock.setPointerCapture(event.pointerId); } catch (_) {}
+    }
+    if (!isDraggingDock) return;
+    bottomDock.scrollLeft = dragStartScrollLeft - deltaX;
+    event.preventDefault();
+  };
+
+  bottomDock.onpointerup = (event) => {
+    if (dragPointerId !== event.pointerId) return;
+    const wasDragging = isDraggingDock;
+    endDockDrag();
+    if (wasDragging) {
+      // Suppress the click that fires after a drag release
+      bottomDock.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); }, { capture: true, once: true });
+    }
+  };
+
+  bottomDock.onpointercancel = () => { endDockDrag(); };
+  bottomDock.onlostpointercapture = () => { endDockDrag(); };
 }
 // =================================================================================
 // SCRIPT FOR PRINTING CALCULATOR
@@ -566,9 +620,6 @@ const CAT_STAND = "stand";
 const CAT_SUBLIMATION = "sublimation";
 const CAT_INVITATION = "invitationCard";
 const CAT_BUSINESS = "businessCard";
-const CAT_IDCARD = "idCard";
-const CAT_LANYARD = "lanyard";
-const CAT_STICKER = "stickerLayout";
 const CAT_ACRYLIC = "acrylicCalculator";
 const CAT_STAMP = "stamp";
 const CAT_SETTINGS = "settings";
