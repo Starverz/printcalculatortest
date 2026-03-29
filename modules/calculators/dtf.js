@@ -66,6 +66,26 @@ function drawDTFCanvas(widthCm, heightCm, artworkImg, artConfig, displayUnit = '
   const unit = displayUnit;
   const canvas = document.getElementById('previewCanvas');
   if (!canvas) return;
+
+  // Responsive: on small screens make canvas square, otherwise original landscape
+  const isSmall = window.innerWidth < 640;
+  const canvasW = isSmall ? 400 : 760;
+  const canvasH = isSmall ? 400 : 400;
+  canvas.width = canvasW;
+  canvas.height = canvasH;
+
+  // Wrapper and canvas CSS: fill container on small, natural size on large
+  const wrapper = document.getElementById('previewCanvasWrapper');
+  if (isSmall) {
+    if (wrapper) wrapper.style.width = '100%';
+    canvas.style.width = '100%';
+    canvas.style.height = 'auto';
+  } else {
+    if (wrapper) wrapper.style.width = 'fit-content';
+    canvas.style.width = '';
+    canvas.style.height = '';
+  }
+
   const ctx = canvas.getContext('2d');
   const W = canvas.width;
   const H = canvas.height;
@@ -222,7 +242,7 @@ function _renderDTFTab(container, ctx) {
       </div>
 
       <!-- Width + Height + Qty + Unit -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; align-items: end;">
+      <div class="dtf-input-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; align-items: end;">
         <div>
           <label class="font-bold mb-2 block text-gray-700 dark:text-gray-200">Width:</label>
           <div style="position: relative;">
@@ -279,19 +299,19 @@ function _renderDTFTab(container, ctx) {
       </div>
 
       <!-- Artwork / Download buttons -->
-      <div style="display: flex; justify-content: center; gap: 8px; margin-top: 12px; width: 760px; margin-left: auto; margin-right: auto;">
-        <button class="btn btn-sm btn-secondary" id="artworkToolsBtn" onclick="toggleArtworkTools()"
-          style="flex: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
+      <div class="preview-action-grid" style="margin-top: 12px;">
+        <button class="btn btn-sm btn-secondary preview-action-btn" id="artworkToolsBtn" onclick="toggleArtworkTools()"
+          style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
           <i class="fas fa-image mr-2"></i> Manage Artwork Design
           <i class="fas fa-chevron-down ml-1" id="artToggleIcon"></i>
         </button>
-        <button class="btn btn-secondary btn-sm" id="downloadOptionsBtn" onclick="toggleDownloadOptions()"
-          style="flex: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
+        <button class="btn btn-secondary btn-sm preview-action-btn" id="downloadOptionsBtn" onclick="toggleDownloadOptions()"
+          style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
           <i class="fas fa-file-export mr-2"></i> Download Options
           <i class="fas fa-chevron-down ml-1" id="dlToggleIcon"></i>
         </button>
-        <button class="btn btn-secondary btn-sm" onclick="downloadPreviewCanvas()"
-          style="flex: 1; background: transparent; color: #28a745; border: 1px solid #28a745;">
+        <button class="btn btn-secondary btn-sm preview-action-btn preview-action-btn--span" onclick="downloadPreviewCanvas()"
+          style="background: transparent; color: #28a745; border: 1px solid #28a745;">
           <i class="fas fa-camera mr-2"></i> Download Preview
         </button>
       </div>
@@ -421,6 +441,32 @@ function _renderDTFTab(container, ctx) {
   initArtworkDragAndDrop();
   _dtfPrevTotal = 0;
   kiraDTF(ctx);
+
+  // Redraw canvas on resize so square/landscape switch applies
+  let _dtfResizeTimer = null;
+  const _dtfResizeHandler = () => {
+    // Immediate CSS update — canvas visually tracks window width during drag
+    const canvas = document.getElementById('previewCanvas');
+    const wrapper = document.getElementById('previewCanvasWrapper');
+    if (canvas && wrapper) {
+      const isSmall = window.innerWidth < 640;
+      if (isSmall) {
+        wrapper.style.width = '100%';
+        canvas.style.width = '100%';
+        canvas.style.height = 'auto';
+      } else {
+        wrapper.style.width = 'fit-content';
+        canvas.style.width = '';
+        canvas.style.height = '';
+      }
+    }
+    // Debounced full redraw after user stops resizing
+    clearTimeout(_dtfResizeTimer);
+    _dtfResizeTimer = setTimeout(() => kiraDTF(ctx), 150);
+  };
+  window.removeEventListener('resize', window._dtfResizeHandler);
+  window._dtfResizeHandler = _dtfResizeHandler;
+  window.addEventListener('resize', _dtfResizeHandler);
 }
 
 export function kiraDTF(ctx) {
@@ -473,27 +519,30 @@ export function kiraDTF(ctx) {
     if (heightCm > 0) {
       const _dtfDetailsCollapsed = resultEl.querySelector('[data-dtf-details][data-open="false"]') !== null;
       resultEl.innerHTML = `
-        <div data-dtf-invoice style="display:flex; align-items:stretch; justify-content:space-between; gap:17px; flex-wrap:wrap;">
-          <div style="flex:1; min-width:260px;">
-            <button onclick="(function(btn){var d=btn.closest('[data-dtf-invoice]').querySelector('[data-dtf-details]');var open=d.dataset.open!=='false';if(open){d.style.maxHeight='0';d.dataset.open='false';btn.querySelector('i').style.transform='rotate(-90deg)';}else{d.style.maxHeight=d.scrollHeight+'px';d.dataset.open='true';btn.querySelector('i').style.transform='rotate(0deg)';};})(this)" style="background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;gap:5px;color:var(--text-secondary);font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:4px;" title="Toggle details">
-              <i class="fas fa-chevron-down" style="font-size:10px;transition:transform 0.2s;"></i> Details
+        <div data-dtf-invoice data-details-collapsed="${_dtfDetailsCollapsed ? 'true' : 'false'}" class="lf-invoice-layout">
+          <div class="lf-invoice-details-wrap">
+            <button onclick="(function(btn){var root=btn.closest('[data-dtf-invoice]');var d=root.querySelector('[data-dtf-details]');var open=d.dataset.open!=='false';if(open){d.style.maxHeight='0';d.dataset.open='false';root.dataset.detailsCollapsed='true';btn.querySelector('i').style.transform='rotate(-90deg)';}else{d.style.maxHeight=d.scrollHeight+'px';d.dataset.open='true';root.dataset.detailsCollapsed='false';btn.querySelector('i').style.transform='rotate(0deg)';};})(this)" class="lf-invoice-toggle" title="Toggle details">
+              <i class="fas fa-chevron-down lf-invoice-toggle-icon"></i> Details
             </button>
-            <div data-dtf-details data-open="true" style="font-size:14px; line-height:1.7; color:var(--text-secondary); overflow:hidden; max-height:600px; transition:max-height 0.35s ease;">
+            <div data-dtf-details data-open="true" class="lf-invoice-details">
               Artwork Size : ${fmt(rawW)}${unit} (W) x ${fmt(rawH)}${unit} (H)<br>
               Total Size : ${fmt(rawH)}${unit} x ${qty}pcs = ${fmt(totalRaw)}${unit}<br>
               Rate : ${currentCurrency.symbol}${formatCurrency(applicableTier.pricePerM)}/m
             </div>
           </div>
-          <div style="padding-left:14px; border-left:1px solid var(--border-color); text-align:right; flex-shrink:0; display:flex; flex-direction:column; justify-content:flex-end;">
-            <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-secondary); margin-bottom:3px;">Total Price</div>
-            <div style="font-size:28px; font-weight:800; color:${activeColor}; line-height:1; white-space:nowrap;">
+          <div class="lf-invoice-summary">
+            <div class="lf-invoice-summary-spacer" aria-hidden="true"></div>
+            <div class="lf-invoice-total-label">Total Price</div>
+            <div class="lf-invoice-total-value" style="color:${activeColor};">
               ${currentCurrency.symbol}<span id="dtfPriceTicker">${formatCurrency(_dtfPrevTotal)}</span>
             </div>
           </div>
         </div>`;
       if (_dtfDetailsCollapsed) {
+        const root = resultEl.querySelector('[data-dtf-invoice]');
         const d = resultEl.querySelector('[data-dtf-details]');
         const i = resultEl.querySelector('[data-dtf-invoice] button i');
+        if (root) { root.dataset.detailsCollapsed = 'true'; }
         if (d) { d.style.maxHeight = '0'; d.dataset.open = 'false'; }
         if (i) { i.style.transform = 'rotate(-90deg)'; }
       }
@@ -632,60 +681,21 @@ function _renderUVDTFTab(container, ctx) {
       </div>
 
       <!-- Artwork / Download buttons -->
-      <div style="display: flex; justify-content: center; gap: 8px; margin-top: 12px; width: 760px; margin-left: auto; margin-right: auto;">
-        <button class="btn btn-sm btn-secondary" id="artworkToolsBtn" onclick="toggleArtworkTools()"
-          style="flex: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
+      <div class="preview-action-grid" style="margin-top: 12px;">
+        <button class="btn btn-sm btn-secondary preview-action-btn" id="artworkToolsBtn" onclick="toggleArtworkTools()"
+          style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
           <i class="fas fa-image mr-2"></i> Manage Artwork Design
           <i class="fas fa-chevron-down ml-1" id="artToggleIcon"></i>
         </button>
-        <button class="btn btn-secondary btn-sm" id="downloadOptionsBtn" onclick="toggleDownloadOptions()"
-          style="flex: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
+        <button class="btn btn-secondary btn-sm preview-action-btn" id="downloadOptionsBtn" onclick="toggleDownloadOptions()"
+          style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
           <i class="fas fa-file-export mr-2"></i> Download Options
           <i class="fas fa-chevron-down ml-1" id="dlToggleIcon"></i>
         </button>
-        <button class="btn btn-secondary btn-sm" onclick="downloadPreviewCanvas()"
-          style="flex: 1; background: transparent; color: #28a745; border: 1px solid #28a745;">
+        <button class="btn btn-secondary btn-sm preview-action-btn preview-action-btn--span" onclick="downloadPreviewCanvas()"
+          style="background: transparent; color: #28a745; border: 1px solid #28a745;">
           <i class="fas fa-camera mr-2"></i> Download Preview
         </button>
-      </div>
-
-      <!-- Download Options panel (collapsible) -->
-      <div id="downloadOptionsPanel" class="panel-collapsible"
-        style="background: var(--light-bg); padding-left: 16px; padding-right: 16px; border-radius: 8px;">
-        <div style="margin-bottom: 12px;">
-          <div style="display: flex; gap: 8px; align-items: end; flex-wrap: wrap;">
-            <div>
-              <label style="font-size: 11px; font-weight: 700; margin-bottom: 6px; display: block;">Select DPI:</label>
-              <div class="size-btn-group" id="dpiBtnGroup">
-                <button class="btn size-btn" onclick="setDownloadDPI(72)">72</button>
-                <button class="btn size-btn" onclick="setDownloadDPI(100)">100</button>
-                <button class="btn size-btn" onclick="setDownloadDPI(150)">150</button>
-                <button class="btn size-btn" onclick="setDownloadDPI(200)">200</button>
-                <button class="btn size-btn" onclick="setDownloadDPI(250)">250</button>
-                <button class="btn size-btn active" onclick="setDownloadDPI(300)">300</button>
-              </div>
-            </div>
-            <div>
-              <label style="font-size: 11px; font-weight: 700; margin-bottom: 6px; display: block;">Custom:</label>
-              <input type="number" id="customDpiInput" placeholder="300" oninput="setCustomDPI(this.value)"
-                style="width: 80px; padding: 8px 10px;">
-            </div>
-          </div>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: end; gap: 10px; flex-wrap: wrap;">
-          <div>
-            <label style="font-size: 11px; font-weight: 700; margin-bottom: 6px; display: block;">Select File Type:</label>
-            <div class="size-btn-group" id="fileTypeBtnGroup">
-              <button class="btn size-btn" onclick="setFileType('jpg')">JPG</button>
-              <button class="btn size-btn active" onclick="setFileType('svg')">SVG</button>
-              <button class="btn size-btn" onclick="setFileType('pdf')">PDF</button>
-            </div>
-          </div>
-          <button class="btn btn-primary" onclick="handleFinalDownload()"
-            style="width: auto; padding: 10px 24px; margin-top: 0;">
-            <i class="fas fa-download mr-2"></i> Download
-          </button>
-        </div>
       </div>
 
       <!-- Artwork Tools panel (collapsible) -->
@@ -742,6 +752,45 @@ function _renderUVDTFTab(container, ctx) {
         </p>
       </div>
 
+      <!-- Download Options panel (collapsible) -->
+      <div id="downloadOptionsPanel" class="panel-collapsible"
+        style="background: var(--light-bg); padding-left: 16px; padding-right: 16px; border-radius: 8px;">
+        <div style="margin-bottom: 12px;">
+          <div style="display: flex; gap: 8px; align-items: end; flex-wrap: wrap;">
+            <div>
+              <label style="font-size: 11px; font-weight: 700; margin-bottom: 6px; display: block;">Select DPI:</label>
+              <div class="size-btn-group" id="dpiBtnGroup">
+                <button class="btn size-btn" onclick="setDownloadDPI(72)">72</button>
+                <button class="btn size-btn" onclick="setDownloadDPI(100)">100</button>
+                <button class="btn size-btn" onclick="setDownloadDPI(150)">150</button>
+                <button class="btn size-btn" onclick="setDownloadDPI(200)">200</button>
+                <button class="btn size-btn" onclick="setDownloadDPI(250)">250</button>
+                <button class="btn size-btn active" onclick="setDownloadDPI(300)">300</button>
+              </div>
+            </div>
+            <div>
+              <label style="font-size: 11px; font-weight: 700; margin-bottom: 6px; display: block;">Custom:</label>
+              <input type="number" id="customDpiInput" placeholder="300" oninput="setCustomDPI(this.value)"
+                style="width: 80px; padding: 8px 10px;">
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: end; gap: 10px; flex-wrap: wrap;">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; margin-bottom: 6px; display: block;">Select File Type:</label>
+            <div class="size-btn-group" id="fileTypeBtnGroup">
+              <button class="btn size-btn" onclick="setFileType('jpg')">JPG</button>
+              <button class="btn size-btn active" onclick="setFileType('svg')">SVG</button>
+              <button class="btn size-btn" onclick="setFileType('pdf')">PDF</button>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="handleFinalDownload()"
+            style="width: auto; padding: 10px 24px; margin-top: 0;">
+            <i class="fas fa-download mr-2"></i> Download
+          </button>
+        </div>
+      </div>
+
       <!-- Add to Pad + Copy buttons -->
       <div style="display: flex; gap: 8px; margin-top: 16px;">
         <button id="addUVDTFToPadBtn" class="btn" onclick="addUVDTFToPad()"
@@ -767,6 +816,32 @@ function _renderUVDTFTab(container, ctx) {
 
   initArtworkDragAndDrop();
   kiraUVDTF(ctx);
+
+  // Redraw canvas on resize so square/landscape switch applies
+  let _uvdtfResizeTimer = null;
+  const _uvdtfResizeHandler = () => {
+    // Immediate CSS update — canvas visually tracks window width during drag
+    const canvas = document.getElementById('previewCanvas');
+    const wrapper = document.getElementById('previewCanvasWrapper');
+    if (canvas && wrapper) {
+      const isSmall = window.innerWidth < 640;
+      if (isSmall) {
+        wrapper.style.width = '100%';
+        canvas.style.width = '100%';
+        canvas.style.height = 'auto';
+      } else {
+        wrapper.style.width = 'fit-content';
+        canvas.style.width = '';
+        canvas.style.height = '';
+      }
+    }
+    // Debounced full redraw after user stops resizing
+    clearTimeout(_uvdtfResizeTimer);
+    _uvdtfResizeTimer = setTimeout(() => kiraUVDTF(ctx), 150);
+  };
+  window.removeEventListener('resize', window._dtfResizeHandler);
+  window._dtfResizeHandler = _uvdtfResizeHandler;
+  window.addEventListener('resize', _uvdtfResizeHandler);
 }
 
 export function kiraUVDTF(ctx) {

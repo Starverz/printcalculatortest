@@ -27,7 +27,88 @@ html {
 }
 
 .sticker-editor-wrapper .panel-collapsible.panel-open {
-  margin-top: 8px !important;
+  margin-top: 10px !important;
+}
+
+/* Spacing & Shape / Smart Finder toggle layout */
+.sticker-toggle-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
+/* Small screen: btn1, panel1, btn2, panel2 (natural order) */
+.sticker-toggle-btn {
+  width: 100%;
+}
+
+.sticker-toggle-panel {
+  width: 100%;
+}
+
+/* Large screen: both buttons on row 1, panels span full width below */
+@media (min-width: 640px) {
+  .sticker-toggle-container {
+    grid-template-columns: 1fr 1fr;
+  }
+  .sticker-toggle-btn--spacing {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .sticker-toggle-btn--finder {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .sticker-toggle-panel--spacing {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .sticker-toggle-panel--finder {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+}
+
+/* Artwork dims row: 2-row on small, 1-row on large */
+.sticker-artwork-dims-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 2px;
+}
+
+/* Row 1: Width + Height each take half */
+.sticker-artwork-dims-row > div:not(.sticker-artwork-unit-group) {
+  flex: 1 1 calc(50% - 5px);
+  min-width: 0;
+}
+
+/* Row 2: Unit group full width, unit dropdown stretches, icons stay square */
+.sticker-artwork-unit-group {
+  display: flex;
+  flex-basis: 100%;
+  gap: 6px;
+  align-items: flex-end;
+  min-width: 0;
+}
+
+.sticker-artwork-unit-group > div {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  /* All on one row, 3 columns equal width + icons */
+  .sticker-artwork-dims-row {
+    flex-wrap: nowrap;
+  }
+  .sticker-artwork-dims-row > div:not(.sticker-artwork-unit-group),
+  .sticker-artwork-unit-group {
+    flex: 1 1 0;
+    min-width: 0;
+  }
 }
 
 .panel-collapsible.sf-panel.panel-open {
@@ -684,10 +765,10 @@ textarea:focus {
   width: max-content;
   max-width: calc(100vw - 32px);
   display: block;
-  padding-top: 64px;
+  padding-top: 58px;
   padding-bottom: 28px;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 40px;
+  padding-right: 40px;
   margin-bottom: -28px;
   box-sizing: content-box;
   overflow-x: auto;
@@ -761,7 +842,7 @@ textarea:focus {
   color: white;
   padding: 4px 8px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 10.8px;
   font-weight: 500;
   opacity: 0;
   transform: translate(-50%, 8px);
@@ -1010,7 +1091,8 @@ html.dark .settings-table .btn-secondary:hover {
   transform: translateY(-2px);
 }
 
-#invCardMaterialGroup .size-btn {
+#invCardMaterialGroup .size-btn,
+#bcMaterialGroup .size-btn {
   height: auto;
   min-height: 44px;
   display: flex;
@@ -1900,6 +1982,23 @@ html.dark .addon-card:not(.agent-active) .addon-card-price-box {
   color: var(--text-secondary);
 }
 
+/* Stack Customer/Agent buttons on small screens (all pages) */
+@media (max-width: 639px) {
+  .global-toggle-container .size-btn-group {
+    flex-direction: column !important;
+    max-width: none !important;
+  }
+  .global-toggle-container .size-btn {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 44px;
+  }
+  /* DTF: 4-col → 2-col on small screens */
+  .dtf-input-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
 .sticker-editor-wrapper .global-toggle-container .size-btn.active {
   background: var(--primary-color);
   border-color: var(--primary-color);
@@ -2008,6 +2107,16 @@ html.dark .addon-card:not(.agent-active) .addon-card-price-box {
     font-family: 'Poppins', sans-serif;
     color: #374151;
     transition: background 0.1s;
+  }
+
+  .custom-sticker-dropdown-option:first-child {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+
+  .custom-sticker-dropdown-option:last-child {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
   }
 
   .custom-sticker-dropdown-option:hover {
@@ -2195,11 +2304,16 @@ html.dark .addon-card:not(.agent-active) .addon-card-price-box {
 }
 
 .sticker-editor-wrapper .preset-buttons-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .sticker-editor-wrapper .preset-buttons-container {
+    grid-template-columns: repeat(10, 1fr);
+  }
 }
 
 .sticker-editor-wrapper .preset-button {
@@ -2542,7 +2656,7 @@ html.dark .sticker-editor-wrapper .canvas-summary-text {
 #quotePadToggleBtn {
   position: fixed;
   top: 6%;
-  right: 33px;
+  right: 0;
   background-color: var(--primary-color);
   color: white;
   padding: 5px 10px;

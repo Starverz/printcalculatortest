@@ -1376,7 +1376,12 @@ export function calculateLayout() {
   // ----------------------------
 
   // UPDATED: Invoice Text Generation
-  document.getElementById("stickerInvoiceText").value = `Print\nSize : ${artworkDisplayWidth}${stickerEditorState.currentArtworkUnit} x ${artworkDisplayHeight}${stickerEditorState.currentArtworkUnit}\nPaper Size : ${displayPaperWidth}${stickerEditorState.currentPaperUnit} x ${displayPaperHeight}${stickerEditorState.currentPaperUnit}\nMaterial : ${selectedMat.name}\nShape : ${invoiceStickerShapeText}\n* Fit ${actualFitResult.total}pcs in 1pc Paper\nPrice : ${_ctx.getCurrentCurrency().symbol}${_ctx.formatCurrency(totalPrice)}${taxText}`;
+  const _stickerInvoiceEl = document.getElementById("stickerInvoiceText");
+  if (_stickerInvoiceEl) {
+    _stickerInvoiceEl.value = `Print\nSize : ${artworkDisplayWidth}${stickerEditorState.currentArtworkUnit} x ${artworkDisplayHeight}${stickerEditorState.currentArtworkUnit}\nPaper Size : ${displayPaperWidth}${stickerEditorState.currentPaperUnit} x ${displayPaperHeight}${stickerEditorState.currentPaperUnit}\nMaterial : ${selectedMat.name}\nShape : ${invoiceStickerShapeText}\n* Fit ${actualFitResult.total}pcs in 1pc Paper\nPrice : ${_ctx.getCurrentCurrency().symbol}${_ctx.formatCurrency(totalPrice)}${taxText}`;
+    _stickerInvoiceEl.style.height = 'auto';
+    _stickerInvoiceEl.style.height = _stickerInvoiceEl.scrollHeight + 'px';
+  }
 
   // Text is now drawn directly on canvas in drawCanvas function
   // document.getElementById("canvasSummaryText").textContent = ... (Removed)
@@ -3040,26 +3045,19 @@ export function getStickerEditorHTML() {
                 <!-- 2. Artwork Presets -->
                 <div style="margin-bottom: 10px; width: 100%;">
                     <label class="mb-1 block">Artwork Presets:</label>
-                    <div class="preset-buttons-container" style="display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; width: 100%;">
+                    <div class="preset-buttons-container" style="display: grid; gap: 6px; width: 100%;">
                         ${presetButtons}
                     </div>
                 </div>
 
-                <!-- COLLAPSIBLE SPACING & SHAPE + SMART FINDER (Button Row) -->
-                <div style="width: 100%;">
-                <div style="display: flex; gap: 8px; width: 100%;">
-                    <button class="btn btn-sm btn-secondary unselected-grey-bg" id="stickerSpacingBtn" onclick="toggleStickerSpacingPanel()" style="flex: 1; color: var(--text-secondary); border: 1px solid var(--border-color);">
+                <!-- COLLAPSIBLE SPACING & SHAPE + SMART FINDER -->
+                <div class="sticker-toggle-container">
+                    <button class="btn btn-sm btn-secondary unselected-grey-bg sticker-toggle-btn sticker-toggle-btn--spacing" id="stickerSpacingBtn" onclick="toggleStickerSpacingPanel()" style="color: var(--text-secondary); border: 1px solid var(--border-color);">
                         <i class="fas fa-sliders-h mr-2"></i> Modify Spacing & Shape
                         <i class="fas fa-chevron-down ml-1" id="stickerSpacingToggleIcon"></i>
                     </button>
-                    <button class="btn btn-sm btn-secondary unselected-grey-bg" id="stickerSmartFinderBtn" onclick="toggleStickerSmartFinderPanel()" style="flex: 1; color: var(--text-secondary); border: 1px solid var(--border-color);">
-                        <i class="fas fa-wand-magic-sparkles mr-2"></i> Smart Finder
-                        <i class="fas fa-chevron-down ml-1" id="stickerSFToggleIcon"></i>
-                    </button>
-                </div>
 
-                <!-- Spacing & Shape Panel -->
-                <div id="stickerSpacingPanel" class="panel-collapsible" style="padding-left: 16px; padding-right: 16px; border-radius: 8px; width: 100%;">
+                    <div id="stickerSpacingPanel" class="panel-collapsible sticker-toggle-panel sticker-toggle-panel--spacing" style="padding-left: 16px; padding-right: 16px; border-radius: 8px;">
                     <div class="flex flex-col gap-3">
                         <!-- 3. Spacing -->
                         <div>
@@ -3085,8 +3083,12 @@ export function getStickerEditorHTML() {
                     </div>
                 </div>
 
-                <!-- Smart Finder Panel -->
-                <div id="stickerSmartFinderPanel" class="panel-collapsible sf-panel" style="padding-left: 16px; padding-right: 16px; border-radius: 8px; width: 100%;">
+                    <button class="btn btn-sm btn-secondary unselected-grey-bg sticker-toggle-btn sticker-toggle-btn--finder" id="stickerSmartFinderBtn" onclick="toggleStickerSmartFinderPanel()" style="color: var(--text-secondary); border: 1px solid var(--border-color);">
+                        <i class="fas fa-wand-magic-sparkles mr-2"></i> Smart Finder
+                        <i class="fas fa-chevron-down ml-1" id="stickerSFToggleIcon"></i>
+                    </button>
+
+                    <div id="stickerSmartFinderPanel" class="panel-collapsible sf-panel sticker-toggle-panel sticker-toggle-panel--finder" style="padding-left: 16px; padding-right: 16px; border-radius: 8px;">
                     <div class="flex flex-col gap-3">
 
                         <!-- Mode Toggle -->
@@ -3211,18 +3213,19 @@ export function getStickerEditorHTML() {
 
                 <!-- 6. Artwork Size with inline Lock Ratio & Rotate -->
                 <div>
-                    <div class="row" style="margin-bottom: 2px; align-items: flex-end; gap: 10px;">
-                        <div style="flex: 1; min-width: 0;"><label>Artwork Width:</label><div class="input-with-stepper"><button type="button" class="stepper-button" onclick="changeInputValue('artworkWidth', -1, 'artwork')"><i class="fas fa-minus"></i></button><input type="number" id="artworkWidth" step="1" value="5.0" onchange="updateArtworkDimensions('width'); calculateLayout();" class="px-2 py-1 h-11" /><button type="button" class="stepper-button" onclick="changeInputValue('artworkWidth', 1, 'artwork')"><i class="fas fa-plus"></i></button></div></div>
-                        <div style="flex: 1; min-width: 0;"><label>Artwork Height:</label><div class="input-with-stepper"><button type="button" class="stepper-button" onclick="changeInputValue('artworkHeight', -1, 'artwork')"><i class="fas fa-minus"></i></button><input type="number" id="artworkHeight" step="1" value="5.0" onchange="updateArtworkDimensions('height'); calculateLayout();" class="px-2 py-1 h-11" /><button type="button" class="stepper-button" onclick="changeInputValue('artworkHeight', 1, 'artwork')"><i class="fas fa-plus"></i></button></div></div>
-                        <div style="flex: 1; min-width: 0;"><label>Artwork Unit:</label><div class="custom-sticker-dropdown" id="stickerArtworkUnitWrapper"><div class="custom-sticker-dropdown-trigger" onclick="toggleStickerArtworkUnitDropdown(event)"><span class="custom-sticker-dropdown-label">cm</span><i class="fas fa-chevron-down custom-sticker-dropdown-arrow"></i></div><div class="custom-sticker-dropdown-list" id="stickerArtworkUnitList"><div class="custom-sticker-dropdown-option" data-value="in" onclick="selectStickerArtworkUnitOption('in')">inch</div><div class="custom-sticker-dropdown-option selected" data-value="cm" onclick="selectStickerArtworkUnitOption('cm')">cm</div><div class="custom-sticker-dropdown-option" data-value="mm" onclick="selectStickerArtworkUnitOption('mm')">mm</div><div class="custom-sticker-dropdown-option" data-value="ft" onclick="selectStickerArtworkUnitOption('ft')">feet</div></div><select id="unitSelect" onchange="toggleArtworkUnit()" style="display:none"><option value="in">inch</option><option value="cm" selected>cm</option><option value="mm">mm</option><option value="ft">feet</option></select></div></div>
-                        <div style="flex: none; display: flex; gap: 6px; align-self: flex-end;">
-                            <button id="lockRatioBtn" class="btn btn-control ${agentClass}" onclick="toggleLockRatio()" title="Lock / Unlock Ratio" style="width: 44px; height: 44px; padding: 0; font-size: 1.1em; display: flex; align-items: center; justify-content: center;"><i class="fas fa-lock-open"></i></button>
-                            <button class="btn btn-control" onclick="rotateArtwork()" title="Rotate Artwork" style="width: 44px; height: 44px; padding: 0; font-size: 1.1em; display: flex; align-items: center; justify-content: center;"><i class="fas fa-sync-alt"></i></button>
+                    <div class="sticker-artwork-dims-row">
+                        <div><label>Artwork Width:</label><div class="input-with-stepper"><button type="button" class="stepper-button" onclick="changeInputValue('artworkWidth', -1, 'artwork')"><i class="fas fa-minus"></i></button><input type="number" id="artworkWidth" step="1" value="5.0" onchange="updateArtworkDimensions('width'); calculateLayout();" class="px-2 py-1 h-11" /><button type="button" class="stepper-button" onclick="changeInputValue('artworkWidth', 1, 'artwork')"><i class="fas fa-plus"></i></button></div></div>
+                        <div><label>Artwork Height:</label><div class="input-with-stepper"><button type="button" class="stepper-button" onclick="changeInputValue('artworkHeight', -1, 'artwork')"><i class="fas fa-minus"></i></button><input type="number" id="artworkHeight" step="1" value="5.0" onchange="updateArtworkDimensions('height'); calculateLayout();" class="px-2 py-1 h-11" /><button type="button" class="stepper-button" onclick="changeInputValue('artworkHeight', 1, 'artwork')"><i class="fas fa-plus"></i></button></div></div>
+                        <div class="sticker-artwork-unit-group">
+                            <div style="flex: 1; min-width: 0;"><label>Artwork Unit:</label><div class="custom-sticker-dropdown" id="stickerArtworkUnitWrapper"><div class="custom-sticker-dropdown-trigger" onclick="toggleStickerArtworkUnitDropdown(event)"><span class="custom-sticker-dropdown-label">cm</span><i class="fas fa-chevron-down custom-sticker-dropdown-arrow"></i></div><div class="custom-sticker-dropdown-list" id="stickerArtworkUnitList"><div class="custom-sticker-dropdown-option" data-value="in" onclick="selectStickerArtworkUnitOption('in')">inch</div><div class="custom-sticker-dropdown-option selected" data-value="cm" onclick="selectStickerArtworkUnitOption('cm')">cm</div><div class="custom-sticker-dropdown-option" data-value="mm" onclick="selectStickerArtworkUnitOption('mm')">mm</div><div class="custom-sticker-dropdown-option" data-value="ft" onclick="selectStickerArtworkUnitOption('ft')">feet</div></div><select id="unitSelect" onchange="toggleArtworkUnit()" style="display:none"><option value="in">inch</option><option value="cm" selected>cm</option><option value="mm">mm</option><option value="ft">feet</option></select></div></div>
+                            <button id="lockRatioBtn" class="btn btn-control ${agentClass}" onclick="toggleLockRatio()" title="Lock / Unlock Ratio" style="width: 44px; height: 44px; flex-shrink: 0; padding: 0; font-size: 1.1em; display: flex; align-items: center; justify-content: center;"><i class="fas fa-lock-open"></i></button>
+                            <button class="btn btn-control" onclick="rotateArtwork()" title="Rotate Artwork" style="width: 44px; height: 44px; flex-shrink: 0; padding: 0; font-size: 1.1em; display: flex; align-items: center; justify-content: center;"><i class="fas fa-sync-alt"></i></button>
                         </div>
                     </div>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-0 mb-1">Enter artwork dimensions in the selected unit.</p>
                 </div>
 
+                <div>
                 <!-- Canvas -->
                 <div style="position: relative; display: inline-block; width: 100%; max-width: 880px;">
                     <canvas id="layoutCanvas" width="880" height="750" style="width: 100%; height: auto;"></canvas>
@@ -3233,25 +3236,68 @@ export function getStickerEditorHTML() {
                 <span id="fileNameDisplay" style="display: none;">No file chosen</span>
 
                 <!-- Manage Artwork Design / Download Options / Download Preview Buttons -->
-                <div style="display: flex; justify-content: center; gap: 8px; margin-top: 8px; width: 100%; max-width: 880px;">
-                    <button class="btn btn-sm btn-secondary" id="stickerArtworkToolsBtn" onclick="toggleStickerArtworkTools()" style="flex: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
-                        <i class="fas fa-image mr-2"></i> Manage Artwork Design
-                        <i class="fas fa-chevron-down ml-1" id="stickerArtToggleIcon"></i>
-                    </button>
-                    
-                    <button class="btn btn-secondary btn-sm" id="stickerDownloadOptionsBtn" onclick="toggleStickerDownloadOptions()" style="flex: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
-                        <i class="fas fa-file-export mr-2"></i> Download Options
-                        <i class="fas fa-chevron-down ml-1" id="stickerDlToggleIcon"></i>
-                    </button>
-                    
-                    <button class="btn btn-secondary btn-sm" onclick="downloadStickerCanvas('jpg')" style="flex: 1; background: transparent; color: #28a745; border: 1px solid #28a745;">
-                        <i class="fas fa-camera mr-2"></i> Download Preview
-                    </button>
+                <div class="preview-action-grid" style="margin-top: 8px;">
+                  <button class="btn btn-sm btn-secondary preview-action-btn" id="stickerArtworkToolsBtn" onclick="toggleStickerArtworkTools()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
+                    <i class="fas fa-image mr-2"></i> Manage Artwork Design
+                    <i class="fas fa-chevron-down ml-1" id="stickerArtToggleIcon"></i>
+                  </button>
+                  <button class="btn btn-secondary btn-sm preview-action-btn" id="stickerDownloadOptionsBtn" onclick="toggleStickerDownloadOptions()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
+                    <i class="fas fa-file-export mr-2"></i> Download Options
+                    <i class="fas fa-chevron-down ml-1" id="stickerDlToggleIcon"></i>
+                  </button>
+                  <button class="btn btn-secondary btn-sm preview-action-btn preview-action-btn--span" onclick="downloadStickerCanvas('jpg')" style="background: transparent; color: #28a745; border: 1px solid #28a745;">
+                    <i class="fas fa-camera mr-2"></i> Download Preview
+                  </button>
                 </div>
 
-                <div style="width: 100%; max-width: 880px;">
+                <!-- Manage Artwork Design Panel -->
+                <div id="stickerArtworkToolsPanel" class="panel-collapsible" style="background: var(--light-bg); padding-left: 16px; padding-right: 16px; border-radius: 8px;">
+                    
+                  <div style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center;">
+                    <button class="btn btn-sm btn-primary" id="stickerUploadImageBtn" onclick="document.getElementById('artworkImage').click()" style="width: auto; margin-top: 0; white-space: nowrap; background: ${stickerPanelColor}; border-color: ${stickerPanelColor};">
+                      <i class="fas fa-upload mr-2"></i> Upload Image
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="clearUploadedImage()" style="width: auto; margin-top: 0; white-space: nowrap;">
+                      <i class="fas fa-trash mr-2"></i> Clear
+                    </button>
+                    <div class="artwork-filename-wrapper">
+                      <span id="stickerDesignFileName" class="artwork-filename-text"></span>
+                    </div>
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: 1fr 1fr auto auto auto; gap: 8px; align-items: end;">
+                    <div>
+                      <label id="stickerDesignWLabel" style="font-size: 11px;">Design Width:</label>
+                      <div style="position: relative;">
+                        <input type="number" id="stickerDesignW" step="0.1" oninput="updateStickerDesignDims('w')" disabled style="padding-right: 30px;">
+                        <span class="dynamic-unit" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 12px; pointer-events: none;">cm</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label id="stickerDesignHLabel" style="font-size: 11px;">Design Height:</label>
+                      <div style="position: relative;">
+                        <input type="number" id="stickerDesignH" step="0.1" oninput="updateStickerDesignDims('h')" disabled style="padding-right: 30px;">
+                        <span class="dynamic-unit" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 12px; pointer-events: none;">cm</span>
+                      </div>
+                    </div>
+                        
+                    <button class="btn btn-sm bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600" onclick="rotateStickerDesignImg()" title="Rotate 90Â°" style="height: 42px; width: 42px; display: flex; align-items: center; justify-content: center; margin-top: 0;">
+                      <i class="fas fa-sync-alt"></i>
+                    </button>
+                        
+                    <button class="btn btn-sm bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 active-control ${agentClass}" id="stickerArtLockBtn" onclick="toggleStickerArtLock()" title="Lock Ratio" style="height: 42px; width: 42px; display: flex; align-items: center; justify-content: center; margin-top: 0;">
+                      <i class="fas fa-lock"></i>
+                    </button>
+
+                    <button class="btn btn-sm bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600" onclick="resetStickerArtworkFit()" title="Reset to Fit" style="height: 42px; width: 42px; display: flex; align-items: center; justify-content: center; margin-top: 0;">
+                      <i class="fas fa-compress-arrows-alt"></i>
+                    </button>
+                  </div>
+                  <p style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; margin-bottom: 0;">* Design is automatically scaled to fit within artwork bounds.</p>
+                </div>
+
                 <!-- Download Options Panel -->
-                <div id="stickerDownloadOptionsPanel" class="panel-collapsible" style="background: var(--light-bg); padding-left: 16px; padding-right: 16px; border-radius: 8px; width: 100%; max-width: 880px;">
+                <div id="stickerDownloadOptionsPanel" class="panel-collapsible" style="background: var(--light-bg); padding-left: 16px; padding-right: 16px; border-radius: 8px;">
                     
                     <div style="margin-bottom: 12px;">
                         <div style="display: flex; gap: 8px; align-items: end;">
@@ -3299,73 +3345,24 @@ export function getStickerEditorHTML() {
                     </div>
                 </div>
 
-                <!-- Manage Artwork Design Panel -->
-                <div id="stickerArtworkToolsPanel" class="panel-collapsible" style="background: var(--light-bg); padding-left: 16px; padding-right: 16px; border-radius: 8px; width: 100%; max-width: 880px;">
-                    
-                    <div style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center;">
-                        <button class="btn btn-sm btn-primary" id="stickerUploadImageBtn" onclick="document.getElementById('artworkImage').click()" style="width: auto; margin-top: 0; white-space: nowrap; background: ${stickerPanelColor}; border-color: ${stickerPanelColor};">
-                            <i class="fas fa-upload mr-2"></i> Upload Image
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="clearUploadedImage()" style="width: auto; margin-top: 0; white-space: nowrap;">
-                            <i class="fas fa-trash mr-2"></i> Clear
-                        </button>
-                        <div class="artwork-filename-wrapper">
-                            <span id="stickerDesignFileName" class="artwork-filename-text"></span>
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr auto auto auto; gap: 8px; align-items: end;">
-                        <div>
-                            <label id="stickerDesignWLabel" style="font-size: 11px;">Design Width:</label>
-                            <div style="position: relative;">
-                                <input type="number" id="stickerDesignW" step="0.1" oninput="updateStickerDesignDims('w')" disabled style="padding-right: 30px;">
-                                <span class="dynamic-unit" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 12px; pointer-events: none;">cm</span>
-                            </div>
-                        </div>
-                        <div>
-                            <label id="stickerDesignHLabel" style="font-size: 11px;">Design Height:</label>
-                            <div style="position: relative;">
-                                <input type="number" id="stickerDesignH" step="0.1" oninput="updateStickerDesignDims('h')" disabled style="padding-right: 30px;">
-                                <span class="dynamic-unit" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 12px; pointer-events: none;">cm</span>
-                            </div>
-                        </div>
-                        
-                        <button class="btn btn-sm bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600" onclick="rotateStickerDesignImg()" title="Rotate 90Â°" style="height: 42px; width: 42px; display: flex; align-items: center; justify-content: center; margin-top: 0;">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
-                        
-                        <button class="btn btn-sm bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 active-control ${agentClass}" id="stickerArtLockBtn" onclick="toggleStickerArtLock()" title="Lock Ratio" style="height: 42px; width: 42px; display: flex; align-items: center; justify-content: center; margin-top: 0;">
-                            <i class="fas fa-lock"></i>
-                        </button>
-
-                        <button class="btn btn-sm bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600" onclick="resetStickerArtworkFit()" title="Reset to Fit" style="height: 42px; width: 42px; display: flex; align-items: center; justify-content: center; margin-top: 0;">
-                            <i class="fas fa-compress-arrows-alt"></i>
-                        </button>
-                    </div>
-                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; margin-bottom: 0;">* Design is automatically scaled to fit within artwork bounds.</p>
+                <div style="display: flex; gap: 8px; margin-top: 16px;">
+                    <button id="addStickerToPadBtn" class="btn"
+                        style="flex-grow: 1; width: auto; background-color: var(--success-color); color: white; margin-top: 0; padding-top: 6px; padding-bottom: 6px;">
+                        + Add to Pad
+                    </button>
+                    <button id="btnCopyStickerLayout" class="btn bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600"
+                        style="width: auto; margin-top: 0; padding-top: 6px; padding-bottom: 6px;">
+                        Copy
+                    </button>
                 </div>
-                </div>
-
-                <div style="margin-top: 6px;">
-                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                        <button id="addStickerToPadBtn" class="btn" 
-                            style="flex-grow: 1; width: auto; background-color: var(--success-color); color: white; margin-top: 0; padding-top: 6px; padding-bottom: 6px;">
-                            + Add to Pad
-                        </button>
-                        
-                        <button id="btnCopyStickerLayout" class="btn bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600" 
-                            style="width: auto; margin-top: 0; padding-top: 6px; padding-bottom: 6px;">
-                            Copy
-                        </button>
-                    </div>
-                    
-                    <div class="invoice-copy-area" style="margin-top: 0;">
-                        <textarea id="stickerInvoiceText" readonly rows="7"
-                            class="w-full font-mono text-sm border rounded-lg p-3 resize-y 
-                             bg-[#e9ecef] text-[#495057] border-gray-300 
+                <div class="invoice-copy-area" style="margin-top: 8px;">
+                    <textarea id="stickerInvoiceText" readonly rows="1"
+                        class="w-full font-mono text-sm border rounded-lg p-3
+                             bg-[#e9ecef] text-[#495057] border-gray-300
                              dark:bg-[#374151] dark:text-[#ffffff] dark:border-[#4b5563]"
-                        ></textarea>
-                    </div>
+                        style="overflow:hidden; resize:none;"
+                    ></textarea>
+                </div>
                 </div>
 
                 <div id="sticker-price-list-container" class="bg-white dark:bg-gray-800 p-4 sm:p-8 rounded-lg border border-gray-200 dark:border-gray-700 mt-3">

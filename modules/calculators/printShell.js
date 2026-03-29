@@ -221,10 +221,12 @@ export function showCalculator(category, index, preservedState, context) {
   content.innerHTML = `
 <h2 style="width: 75%; max-width: 1100px; margin: 0 auto; text-align: center;">${catName} - Select Material</h2>
 ${gridHTML}
-<h2 style="width: 75%; max-width: 1100px; margin: 24px auto 0 auto; text-align: center; color: ${titleColor};">Material: ${material.name} (${currentCurrency.symbol} ${context.formatCurrency(context.getPricePerSqFt())}${priceUnit})${agentSuffix}</h2>
-<div class='calculator-panel'>
+<div class='calculator-panel' style="overflow: hidden; padding-top: 0;">
+  <div style="background-color: ${panelPrimaryColor}; color: white; text-align: center; padding: 12px 16px; font-size: 15px; font-weight: 700; margin: 0 -20px 12px -20px; border-radius: 12px 12px 0 0; letter-spacing: 0.01em;">
+    ${material.name} &mdash; ${currentCurrency.symbol}${context.formatCurrency(context.getPricePerSqFt())}${priceUnit}${agentSuffix}
+  </div>
 
-<div class="lf-title-preset-row" style="display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: flex-end; margin-top: 6px;">
+<div class="lf-title-preset-row" style="display: grid; grid-template-columns: 1fr auto; gap: 8px 20px; align-items: flex-end; margin-top: 6px;">
   <div>
   <label for='itemTitle'>Custom Title (Optional):</label>
   <input type='text' id='itemTitle' placeholder="e.g., Design Title" oninput="kiraHarga()" />
@@ -251,7 +253,7 @@ ${gridHTML}
       </div>
     </div>
     <div class="lf-dimension-field lf-dimension-field--unit">
-      <label for='measurementUnit'>Unit:</label>
+      <label>Unit:</label>
       <div class="custom-sticker-dropdown" id="measurementUnitWrapper" onclick="toggleGenericStickerDropdown(event, 'measurementUnitWrapper')">
         <div class="custom-sticker-dropdown-trigger">
           <span class="custom-sticker-dropdown-label" id="measurementUnitLabel">Feet (ft)</span>
@@ -284,7 +286,7 @@ ${gridHTML}
             <div class="lf-finishing-row" style="display: grid; grid-template-columns: ${!material.simple ? '1fr 1fr auto' : '1fr auto'}; gap: 12px; margin-top: 6px; align-items: flex-end;">
                 ${!material.simple ? `
                 <div>
-                    <label for='eyeletOption'>Finishing:</label>
+                    <label>Finishing:</label>
                     <div class="custom-sticker-dropdown" id="eyeletOptionWrapper" onclick="toggleGenericStickerDropdown(event, 'eyeletOptionWrapper')">
                         <div class="custom-sticker-dropdown-trigger">
                             <span class="custom-sticker-dropdown-label" id="eyeletOptionLabel">Auto Eyelets</span>
@@ -309,7 +311,7 @@ ${gridHTML}
                 
                 <div class="lf-finishing-row-bottom">
                 <div>
-                    <label for='whiteBorderOption'>White Border All Side:</label>
+                    <label>White Border All Side:</label>
                     <div class="custom-sticker-dropdown" id="whiteBorderOptionWrapper" onclick="toggleGenericStickerDropdown(event, 'whiteBorderOptionWrapper')">
                         <div class="custom-sticker-dropdown-trigger">
                             <span class="custom-sticker-dropdown-label" id="whiteBorderOptionLabel">None</span>
@@ -394,7 +396,7 @@ ${gridHTML}
                 </div>
               </div>
 
-              <label for='printerSize' class="calculator-label-like" style="grid-column: 2 / 4; grid-row: 1;">Select Printer for Joint Glue Cost:</label>
+              <label class="calculator-label-like" style="grid-column: 2 / 4; grid-row: 1;">Select Printer for Joint Glue Cost:</label>
 
               <div style="grid-column: 2 / 4; grid-row: 2;">
                 <div class="custom-sticker-dropdown" id="printerSizeWrapper" onclick="toggleGenericStickerDropdown(event, 'printerSizeWrapper')">
@@ -434,7 +436,7 @@ ${gridHTML}
                 </div>
               </div>
 
-              <label for='printerSize' class="calculator-label-like">Select Printer for Joint Glue Cost:</label>
+              <label class="calculator-label-like">Select Printer for Joint Glue Cost:</label>
               <div class="custom-sticker-dropdown" id="printerSizeWrapper" onclick="toggleGenericStickerDropdown(event, 'printerSizeWrapper')">
                 <div class="custom-sticker-dropdown-trigger">
                   <span class="custom-sticker-dropdown-label" id="printerSizeLabel">None</span>
@@ -472,63 +474,21 @@ ${gridHTML}
             <span style='font-weight: 700; color: var(--primary-color); font-size: 18px;'>Drop Artwork Here</span>
         </div>
     </div>
-    <div class="preview-action-grid">
+    <div class="preview-action-grid" style="margin-top: 8px;">
       <button class="btn btn-sm btn-secondary preview-action-btn" id="artworkToolsBtn" onclick="toggleArtworkTools()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
-            <i class="fas fa-image mr-2"></i> Manage Artwork Design
-            <i class="fas fa-chevron-down ml-1" id="artToggleIcon"></i>
-        </button>
-        
+        <i class="fas fa-image mr-2"></i> Manage Artwork Design
+        <i class="fas fa-chevron-down ml-1" id="artToggleIcon"></i>
+      </button>
       <button class="btn btn-secondary btn-sm preview-action-btn" id="downloadOptionsBtn" onclick="toggleDownloadOptions()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);">
-            <i class="fas fa-file-export mr-2"></i> Download Options
-            <i class="fas fa-chevron-down ml-1" id="dlToggleIcon"></i>
-        </button>
-        
+        <i class="fas fa-file-export mr-2"></i> Download Options
+        <i class="fas fa-chevron-down ml-1" id="dlToggleIcon"></i>
+      </button>
       <button class="btn btn-secondary btn-sm preview-action-btn preview-action-btn--span" onclick="downloadPreviewCanvas()" style="background: transparent; color: #28a745; border: 1px solid #28a745;">
-            <i class="fas fa-camera mr-2"></i> Download Preview
-        </button>
+        <i class="fas fa-camera mr-2"></i> Download Preview
+      </button>
     </div>
 
-    <div id="downloadOptionsPanel" class="panel-collapsible" style="background: var(--light-bg); padding-left: 16px; padding-right: 16px; border-radius: 8px;">
-        
-        <div style="margin-bottom: 12px;">
-          <div style="display: flex; gap: 8px; align-items: end;">
-            <div>
-              <label style="font-size: 11px; font-weight: 700; margin-bottom: 6px; display: block;">Select DPI:</label>
-              <div class="size-btn-group" id="dpiBtnGroup">
-                <button class="btn size-btn${agentClass}" onclick="setDownloadDPI(72)">72</button>
-                <button class="btn size-btn${agentClass}" onclick="setDownloadDPI(100)">100</button>
-                <button class="btn size-btn${agentClass}" onclick="setDownloadDPI(150)">150</button>
-                <button class="btn size-btn${agentClass}" onclick="setDownloadDPI(200)">200</button>
-                <button class="btn size-btn${agentClass}" onclick="setDownloadDPI(250)">250</button>
-                <button class="btn size-btn active${agentClass}" onclick="setDownloadDPI(300)">300</button>
-              </div>
-            </div>
-            <div style="margin-left: 12px;">
-              <label style="font-size: 11px; font-weight: 700; margin-bottom: 6px; display: block;">Custom:</label>
-              <div style="position: relative;">
-                <input type="number" id="customDpiInput" placeholder="300" oninput="setCustomDPI(this.value)" style="padding-right: 10px; width: 80px;">
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div style="display: flex; justify-content: space-between; align-items: end; gap: 10px;">
-            <div>
-                <label style="font-size: 11px; font-weight: 700; margin-bottom: 6px; display: block;">Select File Type:</label>
-                <div class="size-btn-group" id="fileTypeBtnGroup">
-                    <button class="btn size-btn${agentClass}" onclick="setFileType('jpg')">JPG</button>
-                    <button class="btn size-btn active${agentClass}" onclick="setFileType('svg')">SVG</button>
-                    <button class="btn size-btn${agentClass}" onclick="setFileType('pdf')">PDF</button>
-                </div>
-            </div>
-            
-            <button class="btn btn-primary" onclick="handleFinalDownload()" style="width: auto; padding: 10px 24px; margin-top: 0; background: ${panelPrimaryColor}; border-color: ${panelPrimaryColor};">
-                <i class="fas fa-download mr-2"></i> Download
-            </button>
-        </div>
-    </div>
-
-<div id="artworkToolsPanel" class="panel-collapsible" style="background: var(--light-bg); padding-left: 16px; padding-right: 16px; border-radius: 8px;">
+    <div id="artworkToolsPanel" class="panel-collapsible" style="background: var(--light-bg); padding-left: 16px; padding-right: 16px; border-radius: 8px;">
     
     <div style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center;">
         <input type="file" id="designUpload" accept="image/png, image/jpeg, image/jpg, image/svg+xml, application/pdf" style="display: none;" onchange="handleDesignUpload(this)">
@@ -574,27 +534,62 @@ ${gridHTML}
     <p style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; margin-bottom: 0;">* Design is automatically scaled to fit within material bounds.</p>
 </div>
 
-            <div style="margin-top: 12px;">
-                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                    <button id="addPrintingToPadBtn" class="btn" onclick="addToQuotePad()" 
-                        style="flex-grow: 1; width: auto; background-color: var(--success-color); color: white; margin-top: 0; padding-top: 6px; padding-bottom: 6px;">
-                        + Add to Pad
-                    </button>
-                    
-                    <button id="copyPrintingInvoiceBtn" class="btn bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600" onclick="copyInvoiceText()" 
-                        style="width: auto; margin-top: 0; padding-top: 6px; padding-bottom: 6px;">
-                        Copy
-                    </button>
-                </div>
-                
-                <div class="invoice-copy-area" style="margin-top: 0;">
-                    <textarea id="invoiceText" readonly rows="6"
-                        class="w-full font-mono text-sm border rounded-lg p-3 resize-y 
-                         bg-[#e9ecef] text-[#495057] border-gray-300 
-                         dark:bg-[#1f2937] dark:text-[#e5e7eb] dark:border-gray-600"
-                    ></textarea>
-                </div>
+      <div id="downloadOptionsPanel" class="panel-collapsible"
+        style="background: var(--light-bg); padding-left: 16px; padding-right: 16px; border-radius: 8px;">
+        <div style="margin-bottom: 12px;">
+          <div style="display: flex; gap: 8px; align-items: end;">
+            <div>
+              <label style="font-size: 11px; font-weight: 700; margin-bottom: 6px; display: block;">Select DPI:</label>
+              <div class="size-btn-group" id="dpiBtnGroup">
+                <button class="btn size-btn${agentClass}" onclick="setDownloadDPI(72)">72</button>
+                <button class="btn size-btn${agentClass}" onclick="setDownloadDPI(100)">100</button>
+                <button class="btn size-btn${agentClass}" onclick="setDownloadDPI(150)">150</button>
+                <button class="btn size-btn${agentClass}" onclick="setDownloadDPI(200)">200</button>
+                <button class="btn size-btn${agentClass}" onclick="setDownloadDPI(250)">250</button>
+                <button class="btn size-btn active${agentClass}" onclick="setDownloadDPI(300)">300</button>
+              </div>
             </div>
+            <div style="margin-left: 12px;">
+              <label style="font-size: 11px; font-weight: 700; margin-bottom: 6px; display: block;">Custom:</label>
+              <div style="position: relative;">
+                <input type="number" id="customDpiInput" placeholder="300" oninput="setCustomDPI(this.value)" style="padding-right: 10px; width: 80px;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: end; gap: 10px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; margin-bottom: 6px; display: block;">Select File Type:</label>
+            <div class="size-btn-group" id="fileTypeBtnGroup">
+              <button class="btn size-btn${agentClass}" onclick="setFileType('jpg')">JPG</button>
+              <button class="btn size-btn active${agentClass}" onclick="setFileType('svg')">SVG</button>
+              <button class="btn size-btn${agentClass}" onclick="setFileType('pdf')">PDF</button>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="handleFinalDownload()" style="width: auto; padding: 10px 24px; margin-top: 0; background: ${panelPrimaryColor}; border-color: ${panelPrimaryColor};">
+            <i class="fas fa-download mr-2"></i> Download
+          </button>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-top: 16px;">
+        <button id="addPrintingToPadBtn" class="btn" onclick="addToQuotePad()"
+          style="flex-grow: 1; width: auto; background-color: var(--success-color); color: white; margin-top: 0; padding-top: 6px; padding-bottom: 6px;">
+          + Add to Pad
+        </button>
+        <button id="copyPrintingInvoiceBtn" class="btn bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600" onclick="copyInvoiceText()"
+          style="width: auto; margin-top: 0; padding-top: 6px; padding-bottom: 6px;">
+          Copy
+        </button>
+      </div>
+      <div class="invoice-copy-area" style="margin-top: 8px;">
+        <textarea id="invoiceText" readonly rows="1"
+          class="w-full font-mono text-sm border rounded-lg p-3
+                 bg-[#e9ecef] text-[#495057] border-gray-300
+                 dark:bg-[#1f2937] dark:text-[#e5e7eb] dark:border-gray-600"
+          style="overflow:hidden; resize:none;"
+        ></textarea>
+      </div>
       </div>`;
 
   if (context.getLastClickedASize()) {
@@ -628,6 +623,32 @@ ${gridHTML}
 
   context.attachGridListeners(content);
   context.initArtworkDragAndDrop();
+
+  // Redraw canvas on resize so square/landscape switch applies in real time
+  let _lfResizeTimer = null;
+  const _lfResizeHandler = () => {
+    // Immediate CSS update — canvas visually tracks window width during drag
+    const canvas = document.getElementById('previewCanvas');
+    const wrapper = document.getElementById('previewCanvasWrapper');
+    if (canvas && wrapper) {
+      const isSmall = window.innerWidth < 640;
+      if (isSmall) {
+        wrapper.style.width = '100%';
+        canvas.style.width = '100%';
+        canvas.style.height = 'auto';
+      } else {
+        wrapper.style.width = 'fit-content';
+        canvas.style.width = '';
+        canvas.style.height = '';
+      }
+    }
+    // Debounced full redraw after user stops resizing
+    clearTimeout(_lfResizeTimer);
+    _lfResizeTimer = setTimeout(() => context.kiraHarga(), 150);
+  };
+  window.removeEventListener('resize', window._dtfResizeHandler);
+  window._dtfResizeHandler = _lfResizeHandler;
+  window.addEventListener('resize', _lfResizeHandler);
 }
 
 export function setASize(sizeName, widthMm, heightMm, context) {

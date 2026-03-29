@@ -498,10 +498,6 @@ function initializeDock() {
     name: 'Gift Item',
     icon: 'fas fa-gift',
     page: 'giftItem'
-  }, {
-    name: 'Asset Library',
-    icon: 'fas fa-images',
-    page: 'asset'
   }];
 
   // FILTER: Only show enabled categories based on global settings
@@ -521,7 +517,7 @@ function initializeDock() {
 
   const dockItems = Array.from(dockContainer.children);
   const baseSize = 44;
-  const maxSize = 80;
+  const maxSize = 72;
   const magnificationDistance = 150;
   const canDockHover = () => window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
@@ -529,6 +525,8 @@ function initializeDock() {
     dockItems.forEach((item) => {
       item.style.width = '';
       item.style.height = '';
+      item.style.backdropFilter = '';
+      item.style.webkitBackdropFilter = '';
       const icon = item.querySelector('i');
       if (icon) icon.style.fontSize = '';
     });
@@ -550,6 +548,9 @@ function initializeDock() {
       const newSize = baseSize + (maxSize - baseSize) * easedMagnification;
       item.style.width = `${newSize}px`;
       item.style.height = `${newSize}px`;
+      const blurAmount = 4 + easedMagnification * 8;
+      item.style.backdropFilter = `blur(${blurAmount}px)`;
+      item.style.webkitBackdropFilter = `blur(${blurAmount}px)`;
       const icon = item.querySelector('i');
       if (icon) icon.style.fontSize = `${newSize * 0.5}px`;
     });
@@ -3753,10 +3754,26 @@ ${gridHTML}
             <span style='font-weight: 700; color: var(--primary-color); font-size: 18px;'>Drop Artwork Here</span>
         </div>
     </div>
-    <div style="display: flex; justify-content: center; gap: 8px; margin-top: 12px; width: 760px; margin-left: auto; margin-right: auto;">
-        <button class="btn btn-sm btn-secondary" id="artworkToolsBtn" onclick="toggleArtworkTools()" style="flex: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);"><i class="fas fa-image mr-2"></i> Manage Artwork Design<i class="fas fa-chevron-down ml-1" id="artToggleIcon"></i></button>
-        <button class="btn btn-secondary btn-sm" id="downloadOptionsBtn" onclick="toggleDownloadOptions()" style="flex: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);"><i class="fas fa-file-export mr-2"></i> Download Options<i class="fas fa-chevron-down ml-1" id="dlToggleIcon"></i></button>
-        <button class="btn btn-secondary btn-sm" onclick="downloadPreviewCanvas()" style="flex: 1; background: transparent; color: #28a745; border: 1px solid #28a745;"><i class="fas fa-camera mr-2"></i> Download Preview</button>
+    <div class="preview-action-grid" style="margin-top: 8px;">
+      <button class="btn btn-sm btn-secondary preview-action-btn" id="artworkToolsBtn" onclick="toggleArtworkTools()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);"><i class="fas fa-image mr-2"></i> Manage Artwork Design<i class="fas fa-chevron-down ml-1" id="artToggleIcon"></i></button>
+      <button class="btn btn-secondary btn-sm preview-action-btn" id="downloadOptionsBtn" onclick="toggleDownloadOptions()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);"><i class="fas fa-file-export mr-2"></i> Download Options<i class="fas fa-chevron-down ml-1" id="dlToggleIcon"></i></button>
+      <button class="btn btn-secondary btn-sm preview-action-btn preview-action-btn--span" onclick="downloadPreviewCanvas()" style="background: transparent; color: #28a745; border: 1px solid #28a745;"><i class="fas fa-camera mr-2"></i> Download Preview</button>
+    </div>
+    <div id="artworkToolsPanel" class="panel-collapsible" style="background: var(--light-bg); padding-left: 16px; padding-right: 16px; border-radius: 8px;">
+      <div style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center;">
+        <input type="file" id="designUpload" accept="image/png, image/jpeg, image/jpg, image/svg+xml, application/pdf" style="display: none;" onchange="handleDesignUpload(this)">
+        <button class="btn btn-sm btn-primary" onclick="document.getElementById('designUpload').click()" style="width: auto; margin-top: 0; white-space: nowrap; background: ${panelPrimaryColor}; border-color: ${panelPrimaryColor};"><i class="fas fa-upload mr-2"></i> Upload Image</button>
+        <button class="btn btn-sm btn-danger" onclick="clearDesign()" style="width: auto; margin-top: 0; white-space: nowrap;"><i class="fas fa-trash mr-2"></i> Clear</button>
+        <div class="artwork-filename-wrapper"><span id="designFileName" class="artwork-filename-text"></span></div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr auto auto auto; gap: 8px; align-items: end;">
+        <div><label id="designWLabel" style="font-size: 11px;">Design Width:</label><div style="position: relative;"><input type="number" id="designW" step="0.1" oninput="updateDesignDims('w')" disabled style="padding-right: 30px;"><span class="dynamic-unit" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 12px; pointer-events: none;">ft</span></div></div>
+        <div><label id="designHLabel" style="font-size: 11px;">Design Height:</label><div style="position: relative;"><input type="number" id="designH" step="0.1" oninput="updateDesignDims('h')" disabled style="padding-right: 30px;"><span class="dynamic-unit" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 12px; pointer-events: none;">ft</span></div></div>
+        <button class="btn btn-sm bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600" onclick="rotateDesignImg()" title="Rotate 90°" style="height: 42px; width: 42px; display: flex; align-items: center; justify-content: center; margin-top: 0;"><i class="fas fa-sync-alt"></i></button>
+        <button class="btn btn-sm bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 active-control ${agentClass}" id="artLockBtn" onclick="toggleArtLock()" title="Lock Ratio" style="height: 42px; width: 42px; display: flex; align-items: center; justify-content: center; margin-top: 0;"><i class="fas fa-lock"></i></button>
+        <button class="btn btn-sm bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600" onclick="resetArtworkFit()" title="Reset to Fit" style="height: 42px; width: 42px; display: flex; align-items: center; justify-content: center; margin-top: 0;"><i class="fas fa-compress-arrows-alt"></i></button>
+      </div>
+      <p style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; margin-bottom: 0;">* Design is automatically scaled to fit within material bounds.</p>
     </div>
     <div id="downloadOptionsPanel" class="panel-collapsible" style="background: var(--light-bg); padding-left: 16px; padding-right: 16px; border-radius: 8px;">
         <div style="margin-bottom: 12px;">
@@ -3789,22 +3806,6 @@ ${gridHTML}
             </div>
             <button class="btn btn-primary" onclick="handleFinalDownload()" style="width: auto; padding: 10px 24px; margin-top: 0; background: ${panelPrimaryColor}; border-color: ${panelPrimaryColor};"><i class="fas fa-download mr-2"></i> Download</button>
         </div>
-    </div>
-    <div id="artworkToolsPanel" class="panel-collapsible" style="background: var(--light-bg); padding-left: 16px; padding-right: 16px; border-radius: 8px;">
-        <div style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center;">
-            <input type="file" id="designUpload" accept="image/png, image/jpeg, image/jpg, image/svg+xml, application/pdf" style="display: none;" onchange="handleDesignUpload(this)">
-            <button class="btn btn-sm btn-primary" onclick="document.getElementById('designUpload').click()" style="width: auto; margin-top: 0; white-space: nowrap; background: ${panelPrimaryColor}; border-color: ${panelPrimaryColor};"><i class="fas fa-upload mr-2"></i> Upload Image</button>
-            <button class="btn btn-sm btn-danger" onclick="clearDesign()" style="width: auto; margin-top: 0; white-space: nowrap;"><i class="fas fa-trash mr-2"></i> Clear</button>
-            <div class="artwork-filename-wrapper"><span id="designFileName" class="artwork-filename-text"></span></div>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr auto auto auto; gap: 8px; align-items: end;">
-            <div><label id="designWLabel" style="font-size: 11px;">Design Width:</label><div style="position: relative;"><input type="number" id="designW" step="0.1" oninput="updateDesignDims('w')" disabled style="padding-right: 30px;"><span class="dynamic-unit" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 12px; pointer-events: none;">ft</span></div></div>
-            <div><label id="designHLabel" style="font-size: 11px;">Design Height:</label><div style="position: relative;"><input type="number" id="designH" step="0.1" oninput="updateDesignDims('h')" disabled style="padding-right: 30px;"><span class="dynamic-unit" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 12px; pointer-events: none;">ft</span></div></div>
-            <button class="btn btn-sm bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600" onclick="rotateDesignImg()" title="Rotate 90°" style="height: 42px; width: 42px; display: flex; align-items: center; justify-content: center; margin-top: 0;"><i class="fas fa-sync-alt"></i></button>
-            <button class="btn btn-sm bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 active-control ${agentClass}" id="artLockBtn" onclick="toggleArtLock()" title="Lock Ratio" style="height: 42px; width: 42px; display: flex; align-items: center; justify-content: center; margin-top: 0;"><i class="fas fa-lock"></i></button>
-            <button class="btn btn-sm bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600" onclick="resetArtworkFit()" title="Reset to Fit" style="height: 42px; width: 42px; display: flex; align-items: center; justify-content: center; margin-top: 0;"><i class="fas fa-compress-arrows-alt"></i></button>
-        </div>
-        <p style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; margin-bottom: 0;">* Design is automatically scaled to fit within material bounds.</p>
     </div>
     <div style="margin-top: 12px;">
         <div style="display: flex; gap: 8px; margin-bottom: 8px;">

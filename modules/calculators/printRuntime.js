@@ -386,6 +386,8 @@ export function calculatePrintingLogic(context, materialList, categoryLabel) {
       1,
       { showQty: false, showTotal: false, unitLabel: '' }
     );
+    invoiceTextArea.style.height = 'auto';
+    invoiceTextArea.style.height = invoiceTextArea.scrollHeight + 'px';
   }
 }
 
@@ -455,10 +457,22 @@ export function updateFinishingOptions(context) {
     manualEyeletFields.style.display = 'grid';
   }
 
+  const whiteBorderWrapper = document.getElementById('whiteBorderOptionWrapper');
   if (isCustomActive) {
     customWhiteBorderFields.style.display = 'block';
     whiteBorderOption.disabled = true;
     whiteBorderOption.value = 'none';
+    if (whiteBorderWrapper) {
+      whiteBorderWrapper.style.opacity = '0.5';
+      whiteBorderWrapper.style.pointerEvents = 'none';
+      whiteBorderWrapper.style.cursor = 'not-allowed';
+    }
+  } else {
+    if (whiteBorderWrapper && eyeletOption !== 'pipe') {
+      whiteBorderWrapper.style.opacity = '';
+      whiteBorderWrapper.style.pointerEvents = '';
+      whiteBorderWrapper.style.cursor = '';
+    }
   }
 
   if (runtimeState.previousFinishingMode !== eyeletOption) {
@@ -570,6 +584,15 @@ export function updatePreview(context) {
 export function drawPreview(context, rawW, rawH, unit, widthInFeet, heightInFeet, isEx, isSimple, mode = 'auto', manual = {}, customBorders = {}) {
   const canvas = document.getElementById('previewCanvas');
   if (!canvas) return;
+
+  // Responsive canvas size: square on small screens, landscape on large
+  const isSmall = window.innerWidth < 640;
+  canvas.width = isSmall ? 400 : 760;
+  canvas.height = 400;
+  const wrapper = document.getElementById('previewCanvasWrapper');
+  if (wrapper) wrapper.style.width = isSmall ? '100%' : 'fit-content';
+  canvas.style.width = isSmall ? '100%' : '';
+  canvas.style.height = isSmall ? 'auto' : '';
 
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
